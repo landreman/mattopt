@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+
+#import simsopt
+from simsopt import *
+
+print("Let's define a single Parameter. Here it is:")
+#v = simsopt.Parameter(7, max=20)
+v = Parameter(7, max=10)
+print(v)
+
+l = ParameterArray1D(n=4, val=3, fixed=False, min=0, max=3)
+print(l)
+print(l.arr)
+
+print(type(l.arr))
+print(type(l.arr[1]))
+
+l.arr[1].val = 7.2
+
+l.arr[2].fixed = True
+
+#l.arr[:].max = 99
+
+print(l.get_vals())
+print(l.get_fixeds())
+
+l.set_fixeds(True)
+print(l)
+
+l.set_maxs(10)
+print(l)
+print("How many are fixed: ", l.count_fixed())
+print("How many are variable: ", l.count_variable())
+
+print()
+print("We create a 2D array of Parameter objects. Here it is:")
+Rc = ParameterArray2D(2, 3) 
+# Another syntax that presently works is ParameterArray2D(m=2, n=3)
+print(Rc)
+
+print("Let's set some properties of individual elements.")
+Rc.arr[0][1].val = 17
+Rc.arr[1][1].fixed = False
+Rc.arr[1][2].max = 1
+
+print("Now here is what the ParameterArray2D looks like:")
+print(Rc)
+
+print("We can get the parameter values in the form of a numpy array:")
+print(Rc.get_vals())
+print("Same for the lower bounds:")
+print(Rc.get_mins())
+print("and the upper bounds:")
+print(Rc.get_maxs())
+print("and the 'fixed' attribute:")
+print(Rc.get_fixeds())
+
+print("The number of elements that are fixed is ", Rc.count_fixed())
+print("The number of elements that are not fixed is ", Rc.count_variable())
+
+s = Surface()
+print(s)
+
+s1 = Surface(nfp=3)
+print(s1)
+
+s2 = SurfaceRZ(nfp=4, mpol=5, ntor=7)
+print(s2)
+
+print(s2.Rc)
+
