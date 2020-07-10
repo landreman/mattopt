@@ -21,7 +21,14 @@ class Surface:
         self.stelsym = stelsym
 
     def __repr__(self):
-        return "simsopt Surface (nfp=" + str(self.nfp) + ", stelsym=" + str(self.stelsym) + ")"
+        return "simsopt base Surface (nfp=" + str(self.nfp) + \
+            ", stelsym=" + str(self.stelsym) + ")"
+
+    def to_RZ(self):
+        """
+        All subclasses should implement this method.
+        """
+        raise NotImplementedError
 
 class SurfaceRZ(Surface):
     """
@@ -56,11 +63,11 @@ class SurfaceRZ(Surface):
         print("Allocating")
         self.mdim = self.mpol + 1
         self.ndim = 2 * self.ntor + 1
-        self.Rc = np.zeros((self.mdim, self.ndim))
-        self.Zs = np.zeros((self.mdim, self.ndim))
+        self.Rc = ParameterArray(np.zeros((self.mdim, self.ndim)))
+        self.Zs = ParameterArray(np.zeros((self.mdim, self.ndim)))
         if not self.stelsym:
-            self.Rs = np.zeros((self.mdim, self.ndim))
-            self.Zc = np.zeros((self.mdim, self.ndim))
+            self.Rs = ParameterArray(np.zeros((self.mdim, self.ndim)))
+            self.Zc = ParameterArray(np.zeros((self.mdim, self.ndim)))
 
     def __repr__(self):
         return "simsopt SurfaceRZ (nfp=" + str(self.nfp) + ", stelsym=" + str(self.stelsym) \
