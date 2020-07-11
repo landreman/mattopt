@@ -7,8 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: unit tests
+    - name: pwd
       run: pwd
+    - name: ls
       run: ls
+    - name: python version
       run: python --version
-      run: python -m unittest
+    - name: unit tests
+      run: python -m unittest discover
