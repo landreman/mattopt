@@ -8,4 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: unit tests
+      run: pwd
+      run: ls
+      run: python --version
       run: python -m unittest
