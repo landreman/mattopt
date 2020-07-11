@@ -69,4 +69,9 @@ print(s2)
 
 print(s2.Rc)
 
-s.to_RZ()
+#s.to_RZ()
+
+#########################
+
+v = Vmec()
+print(v)
