@@ -1,3 +1,6 @@
+# This file is based on examples in
+# https://docs.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions
+
 name: CI
 
 on: [push, pull_request]
@@ -5,13 +8,21 @@ on: [push, pull_request]
 jobs:
   CI:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
     steps:
     - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: pwd
       run: pwd
     - name: ls
       run: ls
     - name: python version
       run: python --version
-    - name: unit tests
-      run: python -m unittest discover
+    - name: Run unit tests
+      run: python -m unittest -v
