@@ -25,7 +25,7 @@ jobs:
     - name: Print information
       run: |
         pwd
-	ls
-	python --version
+        ls
+        python --version
     - name: Run unit tests
       run: python -m unittest -v
