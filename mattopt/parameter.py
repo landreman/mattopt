@@ -12,46 +12,105 @@ import numpy as np
 
 class Parameter:
     """
+    This class represents a value that has the potential to be varied
+    in an optimization, though sometime it may also be held
+    fixed. This class has 4 private variables: _val, _fixed, _min, and
+    _max. For each of these variables there is a public "property":
+    val, fixed, min, and max. By using the "property" decorator it is
+    possible to do some validation any time a user attempts to change
+    the attributes.
+
     The instance variable val can be any type, not just float. This is
     important because we may want parameters that have type int or
     something more exotic.
     """
-    def __init__(self, val, fixed=True, min=np.NINF, max=np.Inf):
+    def __init__(self, val=0.0, fixed=True, min=np.NINF, max=np.Inf):
         """
         Constructor
         """
-        self.val = val
-        self.fixed = fixed
-        self.min = min
-        self.max = max
+        self._val = val
+        self._fixed = fixed
+        self._min = min
+        self._max = max
         self.verify_bounds()
+
+    # When "val", "min", or "max" is altered by a user, we should
+    # check that val is indeed in between min and max.
+
+    @property
+    def val(self):
+        return self._val
+
+    @val.setter
+    def val(self, newval):
+        self.verify_bounds(val=newval)
+        self._val = newval
+
+    @property
+    def min(self):
+        return self._min
+
+    @min.setter
+    def min(self, newmin):
+        self.verify_bounds(min=newmin)
+        self._min = newmin
+
+    @property
+    def max(self):
+        return self._max
+
+    @max.setter
+    def max(self, newmax):
+        self.verify_bounds(max=newmax)
+        self._max = newmax
+
+    # When "fixed" is changed, we do not need to verify the bounds,
+    # but we do want to ensure that "fixed" has type bool.
+    @property
+    def fixed(self):
+        return self._fixed
+
+    @fixed.setter
+    def fixed(self, value):
+        if not isinstance(value, bool):
+            raise RuntimeError(
+                "fixed attribute of a Parameter must have type bool.")
+        self._fixed = value
 
     def __repr__(self):
         """
         Print the object in an informative way.
         """
-        return str(self.val) + ' (fixed=' + str(self.fixed) + ', min=' + \
-            str(self.min) + ', max=' + str(self.max) + ')'
+        return str(self._val) + ' (fixed=' + str(self._fixed) + ', min=' + \
+            str(self._min) + ', max=' + str(self._max) + ')'
 
-    def verify_bounds(self):
+    def verify_bounds(self, val=None, min=None, max=None):
         """
         Check that the value, lower bound, and upper bound are
-        consistent.
+        consistent. If no arguments are supplied, the method checks
+        the private variables of this instance. The method can also
+        check potential new values for val, min, or max, via optional
+        arguments.
         """
-        # Q: Is there a way to get this method to run when the user
-        # manually edits the data?
-        if self.min > self.max:
+        if val is None:
+            val = self._val
+        if min is None:
+            min = self._min
+        if max is None:
+            max = self._max
+
+        if min > max:
             raise RuntimeError("Parameter has min > max. " +
-                               "min = " + str(self.min) +
-                               ", max = " + str(self.max))
-        if self.val < self.min:
+                               "min = " + str(min) +
+                               ", max = " + str(max))
+        if val < min:
             raise RuntimeError("Parameter has val < min. " +
-                               "val = " + str(self.val) +
-                               ", min = " + str(self.min))
-        if self.val > self.max:
+                               "val = " + str(val) +
+                               ", min = " + str(min))
+        if val > max:
             raise RuntimeError("Parameter has val > max. " +
-                               "val = " + str(self.val) +
-                               ", max = " + str(self.max))
+                               "val = " + str(val) +
+                               ", max = " + str(max))
 
 
 class ParameterArray1D:
