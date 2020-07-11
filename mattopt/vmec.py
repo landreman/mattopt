@@ -6,7 +6,7 @@ import numpy as np
 from mattopt import *
 from FortranNamelist import NamelistFile
 
-class Vmec:
+class Vmec(Equilibrium):
     """
     This class represents the VMEC equilibrium code.
     """
@@ -14,8 +14,8 @@ class Vmec:
         """
         Constructor
         """
-        self.nfp = Parameter(1, min=1)
-        self.stelsym = Parameter(True)
+        # nfp and stelsym are initialized by the Equilibrium constructor:
+        Equilibrium.__init__(self)
         self.mpol = Parameter(1, min=1)
         self.ntor = Parameter(0, min=0)
         self.delt = Parameter(0.7, min=0, max=1)

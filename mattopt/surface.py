@@ -1,5 +1,11 @@
+"""
+This module provides several classes for representing toroidal
+surfaces.  There is a base class Surface, and several child classes
+corresponding to different discrete representations.
+"""
+
 import numpy as np
-from .parameter import *
+from .parameter import Parameter, ParameterArray
 
 class Surface:
     """
@@ -15,16 +21,18 @@ class Surface:
             raise RuntimeError("nfp must be at least 1")
         if not isinstance(stelsym, bool):
             raise RuntimeError("stelsym must have type bool")
-        self.nfp = nfp
-        self.stelsym = stelsym
+        self.nfp = Parameter(nfp, min=1)
+        self.stelsym = Parameter(stelsym)
 
     def __repr__(self):
-        return "simsopt base Surface (nfp=" + str(self.nfp) + \
-            ", stelsym=" + str(self.stelsym) + ")"
+        return "simsopt base Surface (nfp=" + str(self.nfp.val) + \
+            ", stelsym=" + str(self.stelsym.val) + ")"
 
     def to_RZ(self):
         """
-        All subclasses should implement this method.
+        Return a SurfaceRZ instance corresponding to the shape of this
+        surface.  All subclasses should implement this abstract
+        method.
         """
         raise NotImplementedError
 
@@ -52,24 +60,25 @@ class SurfaceRZ(Surface):
             raise RuntimeError("mpol must be at least 1")
         if ntor < 0:
             raise RuntimeError("ntor must be at least 0")
-        self.mpol = mpol
-        self.ntor = ntor
+        self.mpol = Parameter(mpol, min=1)
+        self.ntor = Parameter(ntor, min=0)
         Surface.__init__(self, nfp=nfp, stelsym=stelsym)
         self.allocate()
 
     def allocate(self):
         print("Allocating")
-        self.mdim = self.mpol + 1
-        self.ndim = 2 * self.ntor + 1
+        self.mdim = self.mpol.val + 1
+        self.ndim = 2 * self.ntor.val + 1
         self.Rc = ParameterArray(np.zeros((self.mdim, self.ndim)))
         self.Zs = ParameterArray(np.zeros((self.mdim, self.ndim)))
-        if not self.stelsym:
+        if not self.stelsym.val:
             self.Rs = ParameterArray(np.zeros((self.mdim, self.ndim)))
             self.Zc = ParameterArray(np.zeros((self.mdim, self.ndim)))
 
     def __repr__(self):
-        return "simsopt SurfaceRZ (nfp=" + str(self.nfp) + ", stelsym=" + str(self.stelsym) \
-            + ", mpol=" + str(self.mpol) + ", ntor=" + str(self.ntor) + ")"
+        return "simsopt SurfaceRZ (nfp=" + str(self.nfp.val) + ", stelsym=" \
+            + str(self.stelsym.val) + ", mpol=" + str(self.mpol.val) + \
+            ", ntor=" + str(self.ntor.val) + ")"
 
 #    def get_Rc(self, m, n):
 #        return self.Rc[
