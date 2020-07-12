@@ -133,6 +133,11 @@ class ParameterArray:
     max. By using the @property decorator it is possible to do some
     validation any time a user attempts to change the attributes.
 
+    Presently there is no checking that min <= val <= max or that
+    fixed has type bool. For the first of these, I don't know how to
+    automatically validate when a user changes specific ndarray
+    elements.
+
     Presently it is not possible to resize or reshape a
     ParameterArray. This is awkward because it would require changing
     the shape/size of all 4 member arrays (val, fixed, min, max). If

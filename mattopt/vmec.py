@@ -23,7 +23,7 @@ class Vmec(Equilibrium):
         self.phiedge = Parameter(1.0)
         self.curtor = Parameter(0.0)
         self.gamma = Parameter(0.0)
-        self.boundary = SurfaceRZ(nfp=self.nfp.val, stelsym=self.stelsym.val, \
+        self.boundary = SurfaceRZFourier(nfp=self.nfp.val, stelsym=self.stelsym.val, \
                                       mpol=self.mpol.val, ntor=self.ntor.val)
         # Handle a few variables that are not Parameters:
         self.ncurr = 1
@@ -89,7 +89,7 @@ class Vmec(Equilibrium):
             lasym = False
         vmec.stelsym = Parameter(not lasym)
 
-        vmec.boundary = SurfaceRZ(nfp=vmec.nfp.val, stelsym=vmec.stelsym.val, \
+        vmec.boundary = SurfaceRZFourier(nfp=vmec.nfp.val, stelsym=vmec.stelsym.val, \
                                       mpol=vmec.mpol.val, ntor=vmec.ntor.val)
 
         return vmec
