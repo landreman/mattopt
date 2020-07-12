@@ -41,10 +41,10 @@ class ParameterTests(unittest.TestCase):
         If min <= val <= max is not satisfied, the constructor should
         raise an exception.
         """
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p = Parameter(1, min=2, max=3)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p = Parameter(1, min=-10, max=-5)
 
     def test_fixed_validation(self):
@@ -59,10 +59,10 @@ class ParameterTests(unittest.TestCase):
         p.fixed = False
         self.assertFalse(p.fixed)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p.fixed = 1
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p.fixed = 1.0
 
     def test_validation(self):
@@ -78,28 +78,189 @@ class ParameterTests(unittest.TestCase):
         p.max = 5
         self.assertEqual(p.max, 5)
         
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p.val = -20
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p.val = 20
         self.assertEqual(p.val, 3)
             
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p.min = 10
         self.assertEqual(p.min, -5)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             p.max = -10
         self.assertEqual(p.max, 5)
             
 
 class ParameterArrayTests(unittest.TestCase):
     def test_init1(self):
+        """
+        This is the most common use case.
+        """
         d1 = 2
         d2 = 3
         v = np.ones((d1,d2))
         p = ParameterArray(v)
         self.assertEqual(p.fixed.shape, v.shape)
+        self.assertEqual(p.min.shape, v.shape)
+        self.assertEqual(p.max.shape, v.shape)
+        for x in np.nditer(p.fixed):
+            self.assertTrue(x)
+        for x in np.nditer(p.min):
+            self.assertEqual(x, np.NINF)
+        for x in np.nditer(p.max):
+            self.assertEqual(x, np.Inf)
+
+        p.fixed[1,2] = False
+        self.assertFalse(p.fixed[1,2])
+        p.min[1,1] = -5
+        self.assertEqual(p.min[1,1], -5)
+        p.max[0,1] = 10
+        self.assertEqual(p.max[0,1], 10)
+
+    def test_init_singles(self):
+        """
+        Provide single values rather than arrays for the constructor.
+        """
+        d1 = 4
+        d2 = 2
+        v = np.zeros((d1,d2))
+        p = ParameterArray(v, fixed=False, min=-10, max=20)
+        self.assertEqual(p.fixed.shape, v.shape)
+        self.assertEqual(p.min.shape, v.shape)
+        self.assertEqual(p.max.shape, v.shape)
+        for x in np.nditer(p.fixed):
+            self.assertFalse(x)
+        for x in np.nditer(p.min):
+            self.assertEqual(x, -10)
+        for x in np.nditer(p.max):
+            self.assertEqual(x, 20)
+
+    def test_init_arrays(self):
+        """
+        Provide all 4 arrays for the constructor.
+        """
+        d1 = 4
+        d2 = 2
+        v = np.zeros((d1,d2))
+        f = np.full((d1,d2), False)
+        mymin = np.full((d1,d2), -10)
+        mymax = np.full((d1,d2), 20)
+        p = ParameterArray(v, fixed=f, min=mymin, max=mymax)
+        self.assertEqual(p.fixed.shape, v.shape)
+        self.assertEqual(p.min.shape, v.shape)
+        self.assertEqual(p.max.shape, v.shape)
+        for x in np.nditer(p.fixed):
+            self.assertFalse(x)
+        for x in np.nditer(p.min):
+            self.assertEqual(x, -10)
+        for x in np.nditer(p.max):
+            self.assertEqual(x, 20)
+
+    def test_init_exceptions(self):
+        """
+        Test some cases in which an exception should be thrown by the
+        constructor.
+        """
+        v = np.zeros((4, 2))
+
+        with self.assertRaises(ValueError):
+            # fixed must be None or a bool or ndarray of the proper size
+            p = ParameterArray(v, fixed=7)
+
+        with self.assertRaises(ValueError):
+            # min must be None or an int, float, or ndarray of the proper size
+            p = ParameterArray(v, min=[1,1])
+
+        with self.assertRaises(ValueError):
+            # max must be None or an int, float, or ndarray of the proper size
+            p = ParameterArray(v, max=(1,1))
+
+    def test_setters(self):
+        """
+        Use the setters in a way that should work fine.
+        """
+        shape = (2,3)
+        v = np.zeros(shape)
+        p = ParameterArray(v)
+
+        # Try setting to arrays:
+        p.val = np.full(shape, -0.5)
+        p.fixed = np.full(shape, False)
+        p.min = np.full(shape, -5)
+        p.max = np.full(shape, 5)
+        for x in np.nditer(p.val):
+            self.assertEqual(x, -0.5)
+        for x in np.nditer(p.fixed):
+            self.assertFalse(x)
+        for x in np.nditer(p.min):
+            self.assertEqual(x, -5)
+        for x in np.nditer(p.max):
+            self.assertEqual(x, 5)
+
+        # Try setting to single numbers:
+        p.val = 2
+        p.fixed = True
+        p.min = -20
+        p.max = 30
+        for x in np.nditer(p.val):
+            self.assertEqual(x, 2)
+        for x in np.nditer(p.fixed):
+            self.assertTrue(x)
+        for x in np.nditer(p.min):
+            self.assertEqual(x, -20)
+        for x in np.nditer(p.max):
+            self.assertEqual(x, 30)
+
+    def test_setter_exceptions(self):
+        """
+        Try some things that should cause the setters to raise
+        exceptions.
+        """
+        shape = (2,3)
+        v = np.zeros(shape)
+        p = ParameterArray(v)
+
+        # val must be an int or float or ndarray of the proper size
+        with self.assertRaises(ValueError):
+            p.val = [1,2]
+        with self.assertRaises(ValueError):
+            p.val = (9,2,3)
+        with self.assertRaises(ValueError):
+            p.val = np.array([1])
+        with self.assertRaises(ValueError):
+            p.val = np.ones((2,2))
+
+        # fixed must be a bool or ndarray of the proper size
+        with self.assertRaises(ValueError):
+            p.fixed = 7
+        with self.assertRaises(ValueError):
+            p.fixed = 7.0
+        with self.assertRaises(ValueError):
+            p.fixed = np.array([1])
+        with self.assertRaises(ValueError):
+            p.fixed = np.ones((2,2))
+
+        # min must be an int or float or ndarray of the proper size
+        with self.assertRaises(ValueError):
+            p.min = [1,2]
+        with self.assertRaises(ValueError):
+            p.min = (9,2,3)
+        with self.assertRaises(ValueError):
+            p.min = np.array([1])
+        with self.assertRaises(ValueError):
+            p.min = np.ones((2,2))
+
+        # max must be an int or float or ndarray of the proper size
+        with self.assertRaises(ValueError):
+            p.max = [1,2]
+        with self.assertRaises(ValueError):
+            p.max = (9,2,3)
+        with self.assertRaises(ValueError):
+            p.max = np.array([1])
+        with self.assertRaises(ValueError):
+            p.max = np.ones((2,2))
 
 if __name__ == "__main__":
     unittest.main()
