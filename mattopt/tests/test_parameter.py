@@ -91,7 +91,76 @@ class ParameterTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             p.max = -10
         self.assertEqual(p.max, 5)
-            
+
+
+    def listener1(self):
+        self.listener1_called = True
+
+    def listener2(self):
+        self.listener2_called = True
+
+    def test_listeners(self):
+        """
+        Test the _listeners attribute.
+        """
+
+        # If we do not specify any listeners, _listeners should be an
+        # empty set.
+        p = Parameter()
+        self.assertEqual(p._listeners, set())
+
+        p = Parameter(3.0, fixed=False, min=-1, max=10)
+        self.assertEqual(p._listeners, set())
+
+        # Try specifying 1 listener:
+        p = Parameter(7, self.listener1)
+        self.assertEqual(p._listeners, {self.listener1})
+
+        p = Parameter(7, {self.listener1})
+        self.assertEqual(p._listeners, {self.listener1})
+
+        p = Parameter(7, listener=self.listener1)
+        self.assertEqual(p._listeners, {self.listener1})
+
+        # Try specifying >1 listener:
+        p = Parameter(7, {self.listener1, self.listener2})
+        self.assertEqual(p._listeners, {self.listener1, self.listener2})
+
+        p = Parameter(7, listener={self.listener1, self.listener2})
+        self.assertEqual(p._listeners, {self.listener1, self.listener2})
+
+        # If we specify something that is not callable and not a set,
+        # an exception should be raised:
+        with self.assertRaises(ValueError):
+            p = Parameter(7, 5)
+        with self.assertRaises(ValueError):
+            p = Parameter(7.0, listener=True)
+
+        # If we specify a set constaining anything that is not
+        # callable, an exception should be raised:
+        with self.assertRaises(ValueError):
+            p = Parameter(7, {5})
+        with self.assertRaises(ValueError):
+            p = Parameter(7, listener={5})
+        with self.assertRaises(ValueError):
+            p = Parameter(7, {5, self.listener1})
+        with self.assertRaises(ValueError):
+            p = Parameter(7, listener={self.listener1, 5, self.listener2})
+
+        # When val is changed, the listeners should be called.
+        # Try a case with 1 listener:
+        self.listener1_called = False
+        p = Parameter(7, self.listener1)
+        p.val = 1
+        self.assertTrue(self.listener1_called)
+
+        # Try a case with 2 listeners:
+        self.listener1_called = False
+        self.listener2_called = False
+        p = Parameter(listener={self.listener1, self.listener2})
+        p.val = 1
+        self.assertTrue(self.listener1_called)
+        self.assertTrue(self.listener2_called)
 
 class ParameterArrayTests(unittest.TestCase):
     def test_init1(self):

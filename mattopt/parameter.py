@@ -28,7 +28,8 @@ class Parameter:
     float. This is important because we may want parameters that have
     type int, bool, or something more exotic.
     """
-    def __init__(self, val=0.0, fixed=True, min=np.NINF, max=np.Inf):
+    def __init__(self, val=0.0, listener=None, fixed=True, min=np.NINF, \
+                     max=np.Inf):
         """
         Constructor
         """
@@ -37,6 +38,20 @@ class Parameter:
         self._min = min
         self._max = max
         self.verify_bounds()
+        # Initialize _listeners to be a set of all listeners
+        if listener is None:
+            self._listeners = set()
+        elif callable(listener):
+            self._listeners = {listener}
+        elif type(listener) is set:
+            for s in listener:
+                if not callable(s):
+                    raise ValueError("listener must be None, a callable, or " \
+                                         + "a set of callable objects.")
+            self._listeners = listener
+        else:
+            raise ValueError("listener must be None, a callable, or a set " \
+                                 + "of callable objects.")
 
     # When "val", "min", or "max" is altered by a user, we should
     # check that val is indeed in between min and max.
@@ -49,6 +64,9 @@ class Parameter:
     def val(self, newval):
         self.verify_bounds(val=newval)
         self._val = newval
+        # Update all objects that observe this Parameter:
+        for listener in self._listeners:
+            listener()
 
     @property
     def min(self):
