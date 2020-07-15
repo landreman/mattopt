@@ -57,8 +57,10 @@ class SurfaceRZFourier(Surface):
             raise RuntimeError("mpol must be at least 1")
         if ntor < 0:
             raise RuntimeError("ntor must be at least 0")
-        self.mpol = Parameter(mpol, min=1)
-        self.ntor = Parameter(ntor, min=0)
+        self.mpol = Parameter(mpol, min=1, name="mpol for SurfaceRZFourier " \
+                                  + str(hex(id(self))))
+        self.ntor = Parameter(ntor, min=0, name="ntor for SurfaceRZFourier " \
+                                  + str(hex(id(self))))
         Surface.__init__(self, nfp=nfp, stelsym=stelsym)
         self.allocate()
 

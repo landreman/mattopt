@@ -4,14 +4,14 @@ optimized. Surfaces and Coils will be subclasses of this class.
 """
 
 import numpy as np
-from .parameter import Parameter, ParameterArray
+from .parameter import Parameter
 
 class Shape:
     """
     Shape is a base class for shapes that can be optimized, such as
     toroidal surfaces and coils.
 
-    This class has two properites, nfp and stelsym. They are
+    This class has two properites, nfp and stelsym. They ar`e
     implemented using the @property decorator and protected variables
     to ensure users do not set them to any type other than Parameter.
     """
@@ -24,8 +24,8 @@ class Shape:
             raise RuntimeError("nfp must be at least 1")
         if not isinstance(stelsym, bool):
             raise RuntimeError("stelsym must have type bool")
-        self._nfp = Parameter(nfp, min=1)
-        self._stelsym = Parameter(stelsym)
+        self._nfp = Parameter(nfp, min=1, name="nfp")
+        self._stelsym = Parameter(stelsym, name="stelsym")
 
     def __repr__(self):
         return "simsopt base Shape (nfp=" + str(self._nfp.val) + \

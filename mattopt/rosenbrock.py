@@ -16,8 +16,9 @@ class Rosenbrock:
     def __init__(self, a=1, b=100):
         self.a = a
         self.sqrtb = np.sqrt(b)
-        self.x1 = Parameter(0.0, self.reset)
-        self.x2 = Parameter(0.0, self.reset)
+        owner = " for Rosenbrock object " + str(hex(id(self)))
+        self.x1 = Parameter(0.0, self.reset, name="x1" + owner)
+        self.x2 = Parameter(0.0, self.reset, name="x2" + owner)
         params = {self.x1, self.x2}
         self.need_to_run_code = True
         self.target1 = Target(params, self.evaluate_target1)
