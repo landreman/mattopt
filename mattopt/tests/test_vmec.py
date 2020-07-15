@@ -21,33 +21,25 @@ class VmecTests(unittest.TestCase):
         self.assertEqual(v.gamma.val, 0.0)
         self.assertEqual(v.ncurr, 1)
         self.assertFalse(v.free_boundary)
-        self.assertEqual(v.status, "setup")
-
-    def test_repr(self):
-        """
-        Test that Vmec objects are printed in the expected way.
-        """
-        v = Vmec()
-        self.assertEqual(v.__repr__(), \
-                             "Vmec instance (nfp=1 mpol=1 ntor=0 status=setup)")
+        self.assertTrue(v.need_to_run_code)
 
     def test_parse_namelist_var(self):
         """
         Try adding a variable from an input namelist to a Vmec instance.
         """
         v = Vmec()
-        dict = {"foo":7, "bar":8, "oof":False}
+        myvars = {"foo":7, "bar":8, "oof":False}
         # Try a variable that IS in the namelist:
-        v.parse_namelist_var(dict, "foo", 12)
+        v._parse_namelist_var(myvars, "foo", 12)
         self.assertEqual(v.foo.val, 7)
         # Try a variable that is NOT in the namelist:
-        v.parse_namelist_var(dict, "zzz", 13)
+        v._parse_namelist_var(myvars, "zzz", 13)
         self.assertEqual(v.zzz.val, 13)
         # Try renaming a variable:
-        v.parse_namelist_var(dict, "bar", -7, new_name="blorp")
+        v._parse_namelist_var(myvars, "bar", -7, new_name="blorp")
         self.assertEqual(v.blorp.val, 8)
         # Try a variable that is not a parameter:
-        v.parse_namelist_var(dict, "nerp", -5, parameter=False)
+        v._parse_namelist_var(myvars, "nerp", -5, parameter=False)
         self.assertEqual(v.nerp, -5)
 
     def test_from_input_file(self):
@@ -77,7 +69,7 @@ class VmecTests(unittest.TestCase):
         self.assertEqual(v.gamma.val, 0.0)
         self.assertEqual(v.ncurr, 1)
         self.assertFalse(v.free_boundary)
-        self.assertEqual(v.status, "setup")
+        self.assertTrue(v.need_to_run_code)
 
 if __name__ == "__main__":
     unittest.main()

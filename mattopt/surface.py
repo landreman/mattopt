@@ -22,8 +22,8 @@ class Surface(Shape):
         Shape.__init__(self, nfp, stelsym)
 
     def __repr__(self):
-        return "simsopt base Surface (nfp=" + str(self._nfp.val) + \
-            ", stelsym=" + str(self._stelsym.val) + ")"
+        return "Surface " + str(hex(id(self))) + " (nfp=" + str(self._nfp.val) \
+            + ", stelsym=" + str(self._stelsym.val) + ")"
 
     def to_RZFourier(self):
         """
@@ -64,20 +64,50 @@ class SurfaceRZFourier(Surface):
         Surface.__init__(self, nfp=nfp, stelsym=stelsym)
         self.allocate()
 
+    def _generate_names(self, prefix):
+        """
+        Generate the names for the Parameter objects.
+        """
+        assert(type(prefix) is str)
+        self.mdim = self.mpol.val + 1
+        self.ndim = 2 * self.ntor.val + 1
+        objstr = " for SurfaceRZFourier " + str(hex(id(self)))
+        names = []
+        for m in range(self.mdim):
+            namess = []
+            for jn in range(self.ndim):
+                newstr = prefix + "(m={: 04d},n={: 04d})".format(\
+                    m,jn - self.ntor.val) + objstr
+                namess.append(newstr)
+            names.append(namess)
+        return np.array(names)
+
     def allocate(self):
+        """
+        Create the ParameterArrays for the rc, rs, zc, and zs coefficients.
+        """
         print("Allocating")
         self.mdim = self.mpol.val + 1
         self.ndim = 2 * self.ntor.val + 1
-        self.Rc = ParameterArray(np.zeros((self.mdim, self.ndim)))
-        self.Zs = ParameterArray(np.zeros((self.mdim, self.ndim)))
+        myshape = (self.mdim, self.ndim)
+
+        self.rc = ParameterArray(np.zeros(myshape), \
+                                     name=self._generate_names("rc"))
+        self.zs = ParameterArray(np.zeros(myshape), \
+                                     name=self._generate_names("zs"))
+
         if not self.stelsym.val:
-            self.Rs = ParameterArray(np.zeros((self.mdim, self.ndim)))
-            self.Zc = ParameterArray(np.zeros((self.mdim, self.ndim)))
+            self.rs = ParameterArray(np.zeros(myshape), \
+                                         name=self._generate_names("rs"))
+            self.zc = ParameterArray(np.zeros(myshape), \
+                                         name=self._generate_names("zc"))
+                                         
 
     def __repr__(self):
-        return "simsopt SurfaceRZFourier (nfp=" + str(self.nfp.val) + \
-            ", stelsym=" + str(self.stelsym.val) + ", mpol=" + \
-            str(self.mpol.val) + ", ntor=" + str(self.ntor.val) + ")"
+        return "SurfaceRZFourier " + str(hex(id(self))) + " (nfp=" + \
+            str(self.nfp.val) + ", stelsym=" + str(self.stelsym.val) + \
+            ", mpol=" + str(self.mpol.val) + ", ntor=" + str(self.ntor.val) \
+            + ")"
 
 #    def get_Rc(self, m, n):
 #        return self.Rc[
