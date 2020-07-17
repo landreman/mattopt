@@ -1,77 +1,31 @@
 #!/usr/bin/env python3
 
-#import mattopt
 from mattopt import *
 
-print("Let's define a single Parameter. Here it is:")
-#v = mattopt.Parameter(7, max=20)
-v = Parameter(7, max=10)
-print(v)
+"""                                                                           
+Minimize f(x,y,z) = ((x-1)/1)^2 + ((y-2)/2)^2 + ((z-3)/3)^2.                  
+The optimum is at (x,y,z)=(1,2,3), and f=0 at this point.                     
+"""
 
-l = ParameterArray1D(n=4, val=3, fixed=False, min=0, max=3)
-print(l)
-print(l.arr)
+# Define some Target objects that depend on Parameter objects. In the
+# future these functions would involve codes like VMEC, but for now we
+# just use the functions f(x) = x.
+iden1 = Identity()
+iden2 = Identity()
+iden3 = Identity()
 
-print(type(l.arr))
-print(type(l.arr[1]))
+# Each Target is then equipped with a shift and weight, to become a
+# term in a least-squares objective function
+term1 = LeastSquaresTerm(iden1.target, 1, 1)
+term2 = LeastSquaresTerm(iden2.target, 2, 2)
+term3 = LeastSquaresTerm(iden3.target, 3, 3)
 
-l.arr[1].val = 7.2
+# A list of terms are combined to form a nonlinear-least-squares problem.
+prob = LeastSquaresProblem([term1, term2, term3])
 
-l.arr[2].fixed = True
+# Solve the minimization problem:
+prob.solve()
 
-#l.arr[:].max = 99
-
-print(l.get_vals())
-print(l.get_fixeds())
-
-l.set_fixeds(True)
-print(l)
-
-l.set_maxs(10)
-print(l)
-print("How many are fixed: ", l.count_fixed())
-print("How many are variable: ", l.count_variable())
-
-print()
-print("We create a 2D array of Parameter objects. Here it is:")
-Rc = ParameterArray2D(2, 3) 
-# Another syntax that presently works is ParameterArray2D(m=2, n=3)
-print(Rc)
-
-print("Let's set some properties of individual elements.")
-Rc.arr[0][1].val = 17
-Rc.arr[1][1].fixed = False
-Rc.arr[1][2].max = 1
-
-print("Now here is what the ParameterArray2D looks like:")
-print(Rc)
-
-print("We can get the parameter values in the form of a numpy array:")
-print(Rc.get_vals())
-print("Same for the lower bounds:")
-print(Rc.get_mins())
-print("and the upper bounds:")
-print(Rc.get_maxs())
-print("and the 'fixed' attribute:")
-print(Rc.get_fixeds())
-
-print("The number of elements that are fixed is ", Rc.count_fixed())
-print("The number of elements that are not fixed is ", Rc.count_variable())
-
-s = Surface()
-print(s)
-
-s1 = Surface(nfp=3)
-print(s1)
-
-s2 = SurfaceRZ(nfp=4, mpol=5, ntor=7)
-print(s2)
-
-print(s2.Rc)
-
-#s.to_RZ()
-
-#########################
-
-v = Vmec()
-print(v)
+print("An optimum was found at x=", iden1.x.val, ", y=", iden2.x.val, \
+          ", z=", iden3.x.val)
+print("The minimum value of the objective function is ", prob.objective)

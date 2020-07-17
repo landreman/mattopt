@@ -5,5 +5,7 @@ from .equilibrium import *
 from .vmec import *
 from .target import *
 from .rosenbrock import *
+from .least_squares_term import *
+from .least_squares_problem import *
 
 #all = ['Parameter']
