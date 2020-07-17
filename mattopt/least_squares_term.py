@@ -22,9 +22,13 @@ class LeastSquaresTerm:
             raise ValueError('goal must be a float or int')
         if not isnumber(sigma):
             raise ValueError('sigma must be a float or int')
+        if sigma == 0:
+            raise ValueError('sigma cannot be 0')
         self._in_target = target
-        self._goal = goal
-        self._sigma = sigma
+        # If goal or sigma is an int, convert to a float so we don't
+        # have integer division by mistake:
+        self._goal = float(goal)
+        self._sigma = float(sigma)
         self._out_target = Target(self._in_target.parameters, self._out_function)
 
     @property

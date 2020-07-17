@@ -40,5 +40,11 @@ class LeastSquaresTermTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             lst = LeastSquaresTerm(iden.target, 3, iden)
 
+        # sigma cannot be zero
+        with self.assertRaises(ValueError):
+            lst = LeastSquaresTerm(iden.target, 3, 0)
+        with self.assertRaises(ValueError):
+            lst = LeastSquaresTerm(iden.target, 3, 0.0)
+
 if __name__ == "__main__":
     unittest.main()
