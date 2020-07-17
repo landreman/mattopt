@@ -14,6 +14,14 @@ iden1 = Identity()
 iden2 = Identity()
 iden3 = Identity()
 
+# Parameters are all fixed by default, meaning they will not be
+# optimized.  You can choose any subset of the Parameters to be part
+# of the space of independent variables by setting their 'fixed'
+# property to False.
+iden1.x.fixed = False
+iden2.x.fixed = False
+iden3.x.fixed = False
+
 # Each Target is then equipped with a shift and weight, to become a
 # term in a least-squares objective function
 term1 = LeastSquaresTerm(iden1.target, 1, 1)

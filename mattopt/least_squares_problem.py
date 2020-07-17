@@ -62,7 +62,7 @@ class LeastSquaresProblem:
         """
         # Get vector of initial values for the parameters:
         #print("Parameters for solve:",self._parameters)
-        x0 = np.array([param.val for param in self._parameters])
+        x0 = [param.val for param in self._parameters if not param.fixed]
         #print("x0:",x0)
         # Call scipy.optimize:
         result = least_squares(self._residual_func, x0, verbose=2)
@@ -70,15 +70,22 @@ class LeastSquaresProblem:
         #print("optimum residuals:",result.fun)
         #print("optimum cost function:",result.cost)
         # Set Parameters to their values for the optimum
+        index = 0
         for j in range(len(x0)):
-            self._parameters[j].val = result.x[j]
+            if not self._parameters[j].fixed:
+                self._parameters[j].val = result.x[index]
+                index += 1
 
     def _residual_func(self, x):
         """
         This private method is passed to scipy.optimize.
         """
         #print("_residual_func called with x=",x)
+        index = 0
         for j in range(len(self._parameters)):
-            self._parameters[j].val = x[j]
+            if not self._parameters[j].fixed:
+                self._parameters[j].val = x[index]
+                index += 1
+        assert index == len(x)
         return [(term.in_val - term.goal) / term.sigma for term in self._terms]
         

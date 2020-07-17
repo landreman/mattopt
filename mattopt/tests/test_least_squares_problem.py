@@ -53,6 +53,9 @@ class LeastSquaresProblemTests(unittest.TestCase):
         iden1 = Identity()
         iden2 = Identity()
         iden3 = Identity()
+        iden1.x.fixed = False
+        iden2.x.fixed = False
+        iden3.x.fixed = False
         term1 = LeastSquaresTerm(iden1.target, 1, 1)
         term2 = LeastSquaresTerm(iden2.target, 2, 2)
         term3 = LeastSquaresTerm(iden3.target, 3, 3)
@@ -63,11 +66,38 @@ class LeastSquaresProblemTests(unittest.TestCase):
         self.assertAlmostEqual(iden2.x.val, 2)
         self.assertAlmostEqual(iden3.x.val, 3)
 
+    def test_solve_quadratic_fixed(self):
+        """
+        Same as test_solve_quadratic, except x and z are fixed, so
+        only y is optimized.
+        """
+        iden1 = Identity()
+        iden2 = Identity()
+        iden3 = Identity()
+        iden1.x.val = 4
+        iden2.x.val = 5
+        iden3.x.val = 6
+        iden1.x.name = 'x1'
+        iden2.x.name = 'x2'
+        iden3.x.name = 'x3'
+        iden2.x.fixed = False
+        term1 = LeastSquaresTerm(iden1.target, 1, 1)
+        term2 = LeastSquaresTerm(iden2.target, 2, 2)
+        term3 = LeastSquaresTerm(iden3.target, 3, 3)
+        prob = LeastSquaresProblem([term1, term2, term3])
+        prob.solve()
+        self.assertAlmostEqual(prob.objective, 10)
+        self.assertAlmostEqual(iden1.x.val, 4)
+        self.assertAlmostEqual(iden2.x.val, 2)
+        self.assertAlmostEqual(iden3.x.val, 6)
+
     def test_solve_rosenbrock(self):
         """
         Minimize the Rosenbrock function.
         """
         r = Rosenbrock()
+        r.x1.fixed = False
+        r.x2.fixed = False
         term1 = LeastSquaresTerm(r.target1, 0, 1)
         term2 = LeastSquaresTerm(r.target2, 0, 1)
         prob = LeastSquaresProblem([term1, term2])
