@@ -12,6 +12,21 @@ class IsboolTests(unittest.TestCase):
         self.assertTrue(isbool(a[0]))
         self.assertFalse(isbool(b[0]))
 
+class IsnumberTests(unittest.TestCase):
+    def test_basic(self):
+        # Try some arguments that ARE numbers:
+        self.assertTrue(isnumber(5))
+        self.assertTrue(isnumber(5.0))
+        a = np.array([1])
+        b = np.array([1.0])
+        self.assertTrue(isnumber(a[0]))
+        self.assertTrue(isnumber(b[0]))
+
+        # Try some arguments that are NOT numbers:
+        self.assertFalse(isnumber("foo"))
+        self.assertFalse(isnumber(object))
+        self.assertFalse(isnumber([1,2,3]))
+
 class ParameterTests(unittest.TestCase):
     def test_init1(self):
         """

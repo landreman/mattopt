@@ -21,6 +21,14 @@ def isbool(val):
     """
     return isinstance(val, bool) or isinstance(val, np.bool_)
 
+def isnumber(val):
+    """
+    Test whether val is any kind of number, including both native
+    python types or numpy types.
+    """
+    return isinstance(val, int) or isinstance(val, float) or \
+        isinstance(val, np.int_) or isinstance(val, np.float)
+
 class Parameter:
     """
     This class represents a value that has the potential to be varied
