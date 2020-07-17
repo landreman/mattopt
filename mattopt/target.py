@@ -51,3 +51,38 @@ class Target:
         physics code. There should be no arguments.
         """
         return self._function()
+
+class Identity:
+    """
+    Identity is a minimal object for displaying the behaviors of the
+    Target class. An Identity instance has one Parameter named x, and
+    one Target named target. The target just returns the value of the
+    Parameter.
+    """
+    def __init__(self):
+        """
+        There are 2 protected variables, _x and _target, both
+        publically accessible through the @property decorator.
+        """
+        self._x = Parameter(name="x for Identity " + str(hex(id(self))))
+        self._target = Target({self._x}, self.eval)
+
+    @property
+    def x(self):
+        """
+        x is read-only.
+        """
+        return self._x
+
+    @property
+    def target(self):
+        """
+        target is read-only.
+        """
+        return self._target
+
+    def eval(self):
+        """
+        Just return the value of the sole Parameter.
+        """
+        return self._x.val

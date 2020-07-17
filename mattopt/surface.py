@@ -12,13 +12,10 @@ class Surface(Shape):
     """
     Surface is a base class for various representations of toroidal
     surfaces in simsopt.
-
-    This class has two properites, nfp and stelsym. They are
-    implemented using the @property decorator and protected variables
-    to ensure users do not set them to any type other than Parameter.
     """
 
     def __init__(self, nfp=1, stelsym=True):
+        # Shape handles validation of the arguments
         Shape.__init__(self, nfp, stelsym)
 
     def __repr__(self):
@@ -38,13 +35,13 @@ class SurfaceRZFourier(Surface):
     SurfaceRZFourier is a surface that is represented in cylindrical
     coordinates using the following Fourier series: 
 
-    R(theta, phi) = \sum_{m=0}^{mpol} \sum_{n=-ntor}^{ntor} [
-                     R_{c,m,n} \cos(m \theta - n nfp \phi)
-                     + R_{s,m,n} \sin(m \theta - n nfp \phi) ]
+    r(theta, phi) = \sum_{m=0}^{mpol} \sum_{n=-ntor}^{ntor} [
+                     r_{c,m,n} \cos(m \theta - n nfp \phi)
+                     + r_{s,m,n} \sin(m \theta - n nfp \phi) ]
 
-    and the same for Z(theta, phi).
+    and the same for z(theta, phi).
 
-    Here, (R, phi, Z) are standard cylindrical coordinates, and theta
+    Here, (r, phi, z) are standard cylindrical coordinates, and theta
     is any poloidal angle.
     """
     def __init__(self, nfp=1, stelsym=True, mpol=1, ntor=0):

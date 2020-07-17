@@ -1,6 +1,6 @@
 import unittest
 from mattopt.parameter import Parameter
-from mattopt.target import Target
+from mattopt.target import Target, Identity
 
 def my_function():
     return 7
@@ -67,6 +67,21 @@ class TargetTests(unittest.TestCase):
             t4 = Target({p1, 4}, my_function)
         with self.assertRaises(ValueError):
             t4 = Target({p1, 4, p2}, my_function)
+
+
+class IdentityTests(unittest.TestCase):
+    def test_basic(self):
+
+        iden = Identity()
+        iden.x.val = 7
+        self.assertEqual(iden.target.evaluate(), 7)
+
+        iden.x.val = -3.14
+        self.assertAlmostEqual(iden.target.evaluate(), -3.14, places=13)
+
+        iden2 = Identity()
+        iden2.x.val = 42
+        self.assertEqual(iden2.target.evaluate(), 42)
 
 if __name__ == "__main__":
     unittest.main()
