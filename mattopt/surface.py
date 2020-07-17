@@ -108,3 +108,49 @@ class SurfaceRZFourier(Surface):
 
 #    def get_Rc(self, m, n):
 #        return self.Rc[
+
+    @classmethod
+    def from_focus(cls, filename):
+        """
+        Read in a surface from a FOCUS-format file.
+        """
+        f = open(filename, 'r')
+        lines = f.readlines()
+        f.close()
+
+        # Read the line containing Nfou and nfp:
+        splitline = lines[1].split()
+        errmsg = "This does not appear to be a FOCUS-format file."
+        assert len(splitline) == 3, errmsg
+        Nfou = int(splitline[0])
+        nfp = int(splitline[1])
+
+        # Now read the Fourier amplitudes:
+        n = np.full(Nfou, 0)
+        m = np.full(Nfou, 0)
+        rc = np.zeros(Nfou)
+        rs = np.zeros(Nfou)
+        zc = np.zeros(Nfou)
+        zs = np.zeros(Nfou)
+        for j in range(Nfou):
+            splitline = lines[j + 4].split()
+            n[j] = int(splitline[0])
+            m[j] = int(splitline[1])
+            rc[j] = float(splitline[2])
+            rs[j] = float(splitline[3])
+            zc[j] = float(splitline[4])
+            zs[j] = float(splitline[5])
+        assert np.min(m) == 0
+        stelsym = np.max(np.abs(rs)) == 0 and np.max(np.abs(zc)) == 0
+        mpol = int(np.max(m))
+        ntor = int(np.max(np.abs(n)))
+
+        surf = cls(nfp=nfp, stelsym=stelsym, mpol=mpol, ntor=ntor)
+        for j in range(Nfou):
+            surf.rc.data[m[j], n[j] + ntor].val = rc[j]
+            surf.zs.data[m[j], n[j] + ntor].val = zs[j]
+            if not stelsym:
+                surf.rs.data[m[j], n[j] + ntor].val = rs[j]
+                surf.zc.data[m[j], n[j] + ntor].val = zc[j]
+
+        return surf

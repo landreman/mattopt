@@ -1,4 +1,5 @@
 import unittest
+import os
 from mattopt.surface import *
 
 class SurfaceTests(unittest.TestCase):
@@ -39,6 +40,41 @@ class SurfaceTests(unittest.TestCase):
         s.stelsym.val = False
         self.assertEqual(s.nfp.val, 7)
         self.assertFalse(s.stelsym.val)
+
+class SurfaceRZFourierTests(unittest.TestCase):
+    def test_init(self):
+        s = SurfaceRZFourier(nfp=2, mpol=3, ntor=2)
+        self.assertEqual(s.rc.shape, (4, 5))
+        self.assertEqual(s.zs.shape, (4, 5))
+
+        s = SurfaceRZFourier(nfp=10, mpol=1, ntor=3, stelsym=False)
+        self.assertEqual(s.rc.shape, (2, 7))
+        self.assertEqual(s.zs.shape, (2, 7))
+        self.assertEqual(s.rs.shape, (2, 7))
+        self.assertEqual(s.zc.shape, (2, 7))
+
+    def test_from_focus(self):
+        """
+        Try reading in a focus-format file.
+        """
+        base_filename = 'tf_only_half_tesla.plasma'
+        filename2 = os.path.join("mattopt", "tests", base_filename)
+        if os.path.isfile(base_filename):
+            filename = base_filename
+        elif os.path.isfile(filename2):
+            filename = filename2
+        else:
+            raise RuntimeError("Unable to find test file " + base_filename)
+        s = SurfaceRZFourier.from_focus(filename)
+        self.assertEqual(s.nfp.val, 3)
+        self.assertTrue(s.stelsym.val)
+        self.assertEqual(s.rc.shape, (11, 13))
+        self.assertEqual(s.zs.shape, (11, 13))
+        self.assertAlmostEqual(s.rc.data[0, 6].val, 1.408922E+00)
+        self.assertAlmostEqual(s.rc.data[0, 7].val, 2.794370E-02)
+        self.assertAlmostEqual(s.zs.data[0, 7].val, -1.909220E-02)
+        self.assertAlmostEqual(s.rc.data[10, 12].val, -6.047097E-05)
+        self.assertAlmostEqual(s.zs.data[10, 12].val, 3.663233E-05)
 
 if __name__ == "__main__":
     unittest.main()
