@@ -4,7 +4,8 @@ This module provides a class that handles the VMEC equilibrium code.
 
 import numpy as np
 from mattopt import *
-from FortranNamelist import NamelistFile
+#from FortranNamelist import NamelistFile
+import f90nml
 
 class Vmec(Equilibrium):
     """
@@ -78,8 +79,8 @@ class Vmec(Equilibrium):
         """
         vmec = cls()
 
-        nml = NamelistFile(filename)
-        varlist = nml["indata"]
+        nml = f90nml.read(filename)
+        varlist = nml['indata']
 
         vmec._parse_namelist_var(varlist, "nfp", 1, min=1)
         vmec._parse_namelist_var(varlist, "mpol", 1, min=1)
