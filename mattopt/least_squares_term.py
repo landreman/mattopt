@@ -22,16 +22,27 @@ class LeastSquaresTerm:
             raise ValueError('goal must be a float or int')
         if not isnumber(sigma):
             raise ValueError('sigma must be a float or int')
-        self._target = target
+        self._in_target = target
         self._goal = goal
         self._sigma = sigma
+        self._out_target = Target(self._in_target.parameters, self._out_function)
 
     @property
-    def target(self):
+    def in_target(self):
         """
-        For simplicity, target is read-only.
+        Return the Target object used for the input to this
+        least-squares term.  For simplicity, target is read-only.
         """
-        return self._target
+        return self._in_target
+
+    @property
+    def out_target(self):
+        """
+        Return a Target object representing the output of this
+        least-squares term, i.e. a shifted and scaled version of the
+        input Target.  For simplicity, out_target is read-only.
+        """
+        return self._out_target
 
     @property
     def goal(self):
@@ -48,16 +59,23 @@ class LeastSquaresTerm:
         return self._sigma
 
     @property
-    def valin(self):
+    def in_val(self):
         """
         This property is a shorthand for target.evaluate().
         """
-        return self._target.evaluate()
+        return self._in_target.evaluate()
 
     @property
-    def valout(self):
+    def out_val(self):
         """
         Return the overall value of this least-squares term.
         """
-        temp = (self._target.evaluate() - self._goal) / self._sigma
+        temp = (self._in_target.evaluate() - self._goal) / self._sigma
         return temp * temp 
+
+    def _out_function(self):
+        """
+        _out_function is the same as out_val but is a method instead
+        of a property.
+        """
+        return self.out_val

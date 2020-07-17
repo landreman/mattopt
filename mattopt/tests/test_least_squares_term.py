@@ -4,23 +4,25 @@ from mattopt.least_squares_term import LeastSquaresTerm
 
 class LeastSquaresTermTests(unittest.TestCase):
 
-    def another_function(self):
-        return self.p1.val + 100
-
     def test_basic(self):
         """
         Test basic usage
         """
         iden = Identity()
         lst = LeastSquaresTerm(iden.target, 3, 0.1)
-        self.assertIs(lst.target, iden.target)
+        self.assertIs(lst.in_target, iden.target)
         self.assertEqual(lst.goal, 3)
         self.assertAlmostEqual(lst.sigma, 0.1, places=13)
 
         iden.x.val = 17
-        self.assertEqual(lst.valin, 17)
-        shouldbe = ((17 - 3) / 0.1) ** 2
-        self.assertAlmostEqual(lst.valout, shouldbe, places=13)
+        self.assertEqual(lst.in_val, 17)
+        correct_value = ((17 - 3) / 0.1) ** 2
+        self.assertAlmostEqual(lst.out_val, correct_value, places=13)
+        # Check that out_target gives the right value:
+        self.assertAlmostEqual(lst.out_target.evaluate(), correct_value, \
+                                   places=13)
+        # Check that out_target correctly has iden.x as its parameter:
+        self.assertEqual(lst.out_target.parameters, {iden.x})
 
     def test_exceptions(self):
         """
