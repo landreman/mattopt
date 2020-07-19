@@ -66,6 +66,7 @@ class SurfaceRZFourierTests(unittest.TestCase):
         else:
             raise RuntimeError("Unable to find test file " + base_filename)
         s = SurfaceRZFourier.from_focus(filename)
+
         self.assertEqual(s.nfp.val, 3)
         self.assertTrue(s.stelsym.val)
         self.assertEqual(s.rc.shape, (11, 13))
@@ -75,6 +76,22 @@ class SurfaceRZFourierTests(unittest.TestCase):
         self.assertAlmostEqual(s.zs.data[0, 7].val, -1.909220E-02)
         self.assertAlmostEqual(s.rc.data[10, 12].val, -6.047097E-05)
         self.assertAlmostEqual(s.zs.data[10, 12].val, 3.663233E-05)
+
+        self.assertAlmostEqual(s.get_rc(0,0).val, 1.408922E+00)
+        self.assertAlmostEqual(s.get_rc(0,1).val, 2.794370E-02)
+        self.assertAlmostEqual(s.get_zs(0,1).val, -1.909220E-02)
+        self.assertAlmostEqual(s.get_rc(10,6).val, -6.047097E-05)
+        self.assertAlmostEqual(s.get_zs(10,6).val, 3.663233E-05)
+
+        area, volume = s.area_volume()
+        true_area = 24.5871075268402
+        true_volume = 2.96201898538042
+        #print("computed area: ", area, ", correct value: ", true_area, \
+        #    " , difference: ", area - true_area)
+        #print("computed volume: ", volume, ", correct value: ", \
+        #    true_volume, ", difference:", volume - true_volume)
+        self.assertAlmostEqual(area, true_area, places=4)
+        self.assertAlmostEqual(volume, true_volume, places=3)
 
 if __name__ == "__main__":
     unittest.main()

@@ -61,6 +61,16 @@ class SurfaceRZFourier(Surface):
         Surface.__init__(self, nfp=nfp, stelsym=stelsym)
         self.allocate()
 
+        # Initialize to an axisymmetric torus with major radius 1m and
+        # minor radius 0.1m
+        self.get_rc(0,0).val = 1.0
+        self.get_rc(1,0).val = 0.1
+        self.get_zs(1,0).val = 0.1
+
+        # Resolution for computing area, volume, etc:
+        self.ntheta = 128
+        self.nphi = 125
+
     def _generate_names(self, prefix):
         """
         Generate the names for the Parameter objects.
@@ -106,8 +116,133 @@ class SurfaceRZFourier(Surface):
             ", mpol=" + str(self.mpol.val) + ", ntor=" + str(self.ntor.val) \
             + ")"
 
-#    def get_Rc(self, m, n):
-#        return self.Rc[
+    def _validate_mn(self, m, n):
+        """
+        Check whether m and n are in the allowed range.
+        """
+        if m < 0:
+            raise ValueError('m must be >= 0')
+        if m > self.mpol.val:
+            raise ValueError('m must be <= mpol')
+        if n > self.ntor.val:
+            raise ValueError('n must be <= ntor')
+        if n < -self.ntor.val:
+            raise ValueError('n must be >= -ntor')
+    
+    def get_rc(self, m, n):
+        """
+        Return a particular rc Parameter.
+        """
+        self._validate_mn(m, n)
+        return self.rc.data[m, n + self.ntor.val]
+
+    def get_rs(self, m, n):
+        """
+        Return a particular rs Parameter.
+        """
+        if self.stelsym.val:
+            return ValueError( \
+                'rs does not exist for this stellarator-symmetric surface.')
+        self._validate_mn(m, n)
+        return self.rs.data[m, n + self.ntor.val]
+
+    def get_zc(self, m, n):
+        """
+        Return a particular zc Parameter.
+        """
+        if self.stelsym.val:
+            return ValueError( \
+                'zc does not exist for this stellarator-symmetric surface.')
+        self._validate_mn(m, n)
+        return self.zc.data[m, n + self.ntor.val]
+
+    def get_zs(self, m, n):
+        """
+        Return a particular zs Parameter.
+        """
+        self._validate_mn(m, n)
+        return self.zs.data[m, n + self.ntor.val]
+
+    def area_volume(self):
+        """
+        Compute the surface area and the volume enclosed by the surface.
+        """
+        ntheta = self.ntheta # Shorthand
+        nphi = self.nphi
+        theta1d = np.linspace(0, 2 * np.pi, ntheta, endpoint=False)
+        phi1d = np.linspace(0, 2 * np.pi / self.nfp.val, nphi, \
+                                endpoint=False)
+        dtheta = theta1d[1] - theta1d[0]
+        dphi = phi1d[1] - phi1d[0]
+        phi, theta = np.meshgrid(phi1d, theta1d)
+        r = np.zeros((ntheta, nphi))
+        x = np.zeros((ntheta, nphi))
+        y = np.zeros((ntheta, nphi))
+        z = np.zeros((ntheta, nphi))
+        dxdtheta = np.zeros((ntheta, nphi))
+        dydtheta = np.zeros((ntheta, nphi))
+        dzdtheta = np.zeros((ntheta, nphi))
+        dxdphi = np.zeros((ntheta, nphi))
+        dydphi = np.zeros((ntheta, nphi))
+        dzdphi = np.zeros((ntheta, nphi))
+        mdim = self.mpol.val + 1
+        ndim = 2 * self.ntor.val + 1
+        sinphi = np.sin(phi)
+        cosphi = np.cos(phi)
+        nfp = self.nfp.val
+        for m in range(mdim):
+            for jn in range(ndim):
+                # Presently this loop includes negative n when m=0.
+                # This is unnecesary but doesn't hurt I think.
+                n_without_nfp = jn - self.ntor.val
+                n = n_without_nfp * nfp
+                angle = m * theta - n * phi
+                sinangle = np.sin(angle)
+                cosangle = np.cos(angle)
+                rmnc = self.get_rc(m, n_without_nfp).val
+                zmns = self.get_zs(m, n_without_nfp).val
+                r += rmnc * cosangle
+                x += rmnc * cosangle * cosphi
+                y += rmnc * cosangle * sinphi
+                z += zmns * sinangle
+
+                dxdtheta += rmnc * (-m * sinangle) * cosphi
+                dydtheta += rmnc * (-m * sinangle) * sinphi
+                dzdtheta += zmns * m * cosangle
+
+                dxdphi += rmnc * (n * sinangle * cosphi \
+                                      + cosangle * (-sinphi))
+                dydphi += rmnc * (n * sinangle * sinphi \
+                                      + cosangle * cosphi)
+                dzdphi += zmns * (-n * cosangle)
+                if not self.stelsym.val:
+                    rmns = self.get_rs(m, n_without_nfp).val
+                    zmnc = self.get_zc(m, n_without_nfp).val
+                    r += rmns * sinangle
+                    x += rmns * sinangle * cosphi
+                    y += rmns * sinangle * sinphi
+                    z += zmnc * cosangle
+
+                    dxdtheta += rmns * (m * cosangle) * cosphi
+                    dydtheta += rmns * (m * cosangle) * sinphi
+                    dzdtheta += zmnc * (-m * sinangle)
+                    
+                    dxdphi += rmns * (-n * cosangle * cosphi \
+                                           + sinangle * (-sinphi))
+                    dydphi += rmns * (-n * cosangle * sinphi \
+                                           + sinangle * cosphi)
+                    dzdphi += zmnc * (n * sinangle)
+
+        normalx = dydphi * dzdtheta - dzdphi * dydtheta
+        normaly = dzdphi * dxdtheta - dxdphi * dzdtheta
+        normalz = dxdphi * dydtheta - dydphi * dxdtheta
+        norm_normal = np.sqrt(normalx * normalx + normaly * normaly \
+                                  + normalz * normalz)
+        area = nfp * dtheta * dphi * np.sum(np.sum(norm_normal))
+        # Compute plasma volume using \int (1/2) R^2 dZ dphi
+        # = \int (1/2) R^2 (dZ/dtheta) dtheta dphi
+        volume = 0.5 * nfp * dtheta * dphi * np.sum(np.sum(r * r * dzdtheta))
+        return (area, volume)
 
     @classmethod
     def from_focus(cls, filename):
