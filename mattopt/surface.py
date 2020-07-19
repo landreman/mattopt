@@ -7,6 +7,7 @@ corresponding to different discrete representations.
 import numpy as np
 from .parameter import Parameter, ParameterArray
 from .shape import Shape
+from .target import Target
 
 class Surface(Shape):
     """
@@ -68,8 +69,8 @@ class SurfaceRZFourier(Surface):
         self.get_zs(1,0).val = 0.1
 
         # Resolution for computing area, volume, etc:
-        self.ntheta = 128
-        self.nphi = 125
+        self.ntheta = 63
+        self.nphi = 62
 
     def _generate_names(self, prefix):
         """
@@ -108,7 +109,18 @@ class SurfaceRZFourier(Surface):
                                          name=self._generate_names("rs"))
             self.zc = ParameterArray(np.zeros(myshape), \
                                          name=self._generate_names("zc"))
-                                         
+
+        # Create a set of all the surface Parameters, which will be
+        # used for Targets that depend on this surface.
+        params = {self.nfp, self.stelsym, self.mpol, self.ntor}
+        params = params.union(set(self.rc.data.flat))
+        params = params.union(set(self.zs.data.flat))
+        if not self.stelsym.val:
+            params = params.union(set(self.rs.data.flat))
+            params = params.union(set(self.zc.data.flat))
+
+        self.area = Target(params, self.compute_area)
+        self.volume = Target(params, self.compute_volume)
 
     def __repr__(self):
         return "SurfaceRZFourier " + str(hex(id(self))) + " (nfp=" + \
@@ -243,6 +255,20 @@ class SurfaceRZFourier(Surface):
         # = \int (1/2) R^2 (dZ/dtheta) dtheta dphi
         volume = 0.5 * nfp * dtheta * dphi * np.sum(np.sum(r * r * dzdtheta))
         return (area, volume)
+
+    def compute_area(self):
+        """
+        Return the area of the surface.
+        """
+        area, volume = self.area_volume()
+        return area
+
+    def compute_volume(self):
+        """
+        Return the volume of the surface.
+        """
+        area, volume = self.area_volume()
+        return volume
 
     @classmethod
     def from_focus(cls, filename):

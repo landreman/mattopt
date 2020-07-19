@@ -92,6 +92,8 @@ class SurfaceRZFourierTests(unittest.TestCase):
         #    true_volume, ", difference:", volume - true_volume)
         self.assertAlmostEqual(area, true_area, places=4)
         self.assertAlmostEqual(volume, true_volume, places=3)
+        self.assertAlmostEqual(s.compute_area(), true_area, places=4)
+        self.assertAlmostEqual(s.compute_volume(), true_volume, places=3)
 
 if __name__ == "__main__":
     unittest.main()
