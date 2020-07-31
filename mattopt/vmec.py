@@ -6,6 +6,7 @@ import numpy as np
 from mattopt import *
 #from FortranNamelist import NamelistFile
 import f90nml
+import logging
 
 class Vmec(Equilibrium):
     """
@@ -37,7 +38,8 @@ class Vmec(Equilibrium):
         This method observes all the parameters so we know to run VMEC
         if any parameters change.
         """
-        print("Resetting VMEC")
+        logger = logging.getLogger(__name__)
+        logger.info("Resetting VMEC")
         self.need_to_run_code = True
 
     def __repr__(self):

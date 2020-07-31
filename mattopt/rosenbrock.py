@@ -6,6 +6,7 @@ Targets.
 import numpy as np
 from .parameter import Parameter
 from .target import Target
+import logging
 
 class Rosenbrock:
     """
@@ -25,12 +26,14 @@ class Rosenbrock:
         self.target2 = Target(params, self.evaluate_target2)
 
     def reset(self):
-        print("Resetting")
+        logger = logging.getLogger(__name__)
+        logger.info("Resetting")
         self.need_to_run_code = True
 
     def long_computation(self):
+        logger = logging.getLogger(__name__)
         if self.need_to_run_code:
-            print("Running long computation...")
+            logger.info("Running long computation...")
             self.code_output = (self.x2.val - self.x1.val * self.x1.val) * self.sqrtb
         self.need_to_run_code = False
 

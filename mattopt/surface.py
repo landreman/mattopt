@@ -8,6 +8,7 @@ import numpy as np
 from .parameter import Parameter, ParameterArray
 from .shape import Shape
 from .target import Target
+import logging
 
 class Surface(Shape):
     """
@@ -94,7 +95,8 @@ class SurfaceRZFourier(Surface):
         """
         Create the ParameterArrays for the rc, rs, zc, and zs coefficients.
         """
-        print("Allocating")
+        logger = logging.getLogger(__name__)
+        logger.info("Allocating SurfaceRZFourier")
         self.mdim = self.mpol.val + 1
         self.ndim = 2 * self.ntor.val + 1
         myshape = (self.mdim, self.ndim)

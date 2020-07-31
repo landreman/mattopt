@@ -5,6 +5,7 @@ This module provides the LeastSquaresProblem class.
 import numpy as np
 from .least_squares_term import LeastSquaresTerm
 from scipy.optimize import least_squares
+import logging
 
 class LeastSquaresProblem:
     """
@@ -51,6 +52,8 @@ class LeastSquaresProblem:
         Return the value of the total objective function, by summing
         the terms.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("objective called.")
         sum = 0
         for term in self._terms:
             sum += term.out_val
@@ -60,12 +63,15 @@ class LeastSquaresProblem:
         """
         Solve the nonlinear-least-squares minimization problem.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("Beginning solve.")
         # Get vector of initial values for the parameters:
         #print("Parameters for solve:",self._parameters)
         x0 = [param.val for param in self._parameters if not param.fixed]
         #print("x0:",x0)
         # Call scipy.optimize:
         result = least_squares(self._residual_func, x0, verbose=2)
+        logger.info("Completed solve.")
         #print("optimum x:",result.x)
         #print("optimum residuals:",result.fun)
         #print("optimum cost function:",result.cost)
@@ -80,6 +86,8 @@ class LeastSquaresProblem:
         """
         This private method is passed to scipy.optimize.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("_residual_func called.")
         #print("_residual_func called with x=",x)
         index = 0
         for j in range(len(self._parameters)):
