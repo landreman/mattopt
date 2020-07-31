@@ -2,7 +2,7 @@
 
 from mattopt import *
 
-"""                                                                           
+"""
 Optimize the minor radius and elongation of an axisymmetric torus to
 obtain a desired volume and area.
 """
@@ -10,7 +10,8 @@ obtain a desired volume and area.
 desired_volume = 0.6
 desired_area = 8.0
 
-# Start with a default surface, which is axisymmetric with major radius 1 and minor radius 0.1.
+# Start with a default surface, which is axisymmetric with major
+# radius 1 and minor radius 0.1.
 surf = SurfaceRZFourier()
 
 # Parameters are all fixed by default, meaning they will not be
@@ -25,7 +26,8 @@ surf.get_zs(1, 0).fixed = False
 term1 = LeastSquaresTerm(surf.volume, desired_volume, 1)
 term2 = LeastSquaresTerm(surf.area,   desired_area,   1)
 
-# A list of terms are combined to form a nonlinear-least-squares problem.
+# A list of terms are combined to form a nonlinear-least-squares
+# problem.
 prob = LeastSquaresProblem([term1, term2])
 
 # Solve the minimization problem:
