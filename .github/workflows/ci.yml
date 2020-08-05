@@ -27,8 +27,8 @@ jobs:
         set -ex
         pwd
         ls
-	ls externalPackages
-	ls externalPackages/STELLOPT
+        ls externalPackages
+        ls externalPackages/STELLOPT
         python --version
     - name: Run unit tests
       run: python -m unittest -v
