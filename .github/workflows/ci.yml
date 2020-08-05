@@ -40,6 +40,9 @@ jobs:
         ls
         ls externalPackages
         ls externalPackages/STELLOPT
+        ls /
+        ls /home
+        ls /home/STELLOPT
         python --version
     - name: Run unit tests
       run: python -m unittest -v
