@@ -8,6 +8,15 @@ on: [push, pull_request]
 jobs:
   CI:
     runs-on: ubuntu-latest
+
+    # The next bit is copied from STELLOPT's github actions:
+    container: zhucaoxiang/stellopt:compile
+    env:
+      MACHINE: docker
+      STELLOPT_PATH: ${{ github.workspace }}/externalPackages/STELLOPT
+      OMPI_ALLOW_RUN_AS_ROOT: 1
+      OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
+
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
@@ -34,3 +43,7 @@ jobs:
         python --version
     - name: Run unit tests
       run: python -m unittest -v
+    - name: Build LIBSTELL and VMEC
+        run: |
+          cd ${STELLOPT_PATH}
+          ./build_all -o clean_debug -j 2 LIBSTELL VMEC2000
