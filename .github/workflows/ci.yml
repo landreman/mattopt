@@ -44,6 +44,6 @@ jobs:
     - name: Run unit tests
       run: python -m unittest -v
     - name: Build LIBSTELL and VMEC
-        run: |
-          cd ${STELLOPT_PATH}
-          ./build_all -o clean_debug -j 2 LIBSTELL VMEC2000
+      run: |
+        cd ${STELLOPT_PATH}
+        ./build_all -o clean_debug -j 2 LIBSTELL VMEC2000
