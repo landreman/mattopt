@@ -1,0 +1,4 @@
+[submodule "externalPackages/STELLOPT"]
+	path = externalPackages/STELLOPT
+	url = https://github.com/PrincetonUniversity/STELLOPT.git
+	shallow = true
