@@ -123,11 +123,11 @@ jobs:
     - name: ls -l /__t/Python/3.x/x64/lib
       run: ls -l $pythonLocation/lib
 
-    - name: try pip in pythonLocation
-      run: |
-        ls -l $pythonLocation/bin
-        ls -l $pythonLocation/bin/pip
-        $pythonLocation/bin/pip --version
+    #- name: try pip in pythonLocation
+    #  run: |
+    #    ls -l $pythonLocation/bin
+    #    ls -l $pythonLocation/bin/pip
+    #    $pythonLocation/bin/pip --version
 
     #- name: add python to paths
     #  run: |
@@ -156,12 +156,12 @@ jobs:
     # For some reason, LD_LIBRARY_PATH and PATH do not get passed to sudo correctly!
     - name: Install python dependencies
       run: |
-        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
-        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/pip --version
+        #echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
+        #echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/pip --version
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH python3 -m pip install --upgrade pip
-        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
-        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/pip --version
-        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/pip install numpy scipy 
+        #echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
+        #echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/pip --version
+        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH python3 -m pip install numpy scipy 
 
     # If I include f90nml above, I get the following errror:
     # ImportError: libffi.so.6: cannot open shared object file: No such file or directory
