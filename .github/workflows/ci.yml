@@ -68,10 +68,10 @@ jobs:
       run: |
         set -ex
         ls -l /home/visitor
+
     - name: env
-      run: |
-        set -ex
-        env
+      run: env
+
     #- name: Change permissions where needed
     #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
     #    sudo chown -R $USER:$USER /__w
@@ -99,6 +99,17 @@ jobs:
 
     - name: ls -l /__t/Python/3.7.8/x64
       run: ls -l /__t/Python/3.7.8/x64
+
+    - name: ls -l /__t/Python/3.7.8/x64/lib
+      run: ls -l /__t/Python/3.7.8/x64/lib
+
+    - name: add python to paths
+      run: |
+        export LD_LIBRARY_PATH=$pythonLocation/lib
+        export PATH=$pythonLocation/lib:$PATH
+
+    - name: env after adding python
+      run: env
 
     #- name: Install dependencies
     #  run: |
