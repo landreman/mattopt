@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     # The next bit is copied from STELLOPT's github actions:
-    container: zhucaoxiang/stellopt:compile
+    # Note that zhucaoxiang/stellopt:latest contains stellopt but
+    # zhucaoxiang/stellopt:compile does not, just the libraries it depends on.
+    container: zhucaoxiang/stellopt:latest
     env:
       MACHINE: docker
       STELLOPT_PATH: ${{ github.workspace }}/externalPackages/STELLOPT
@@ -36,6 +38,7 @@ jobs:
     - name: Print information
       run: |
         set -ex
+        env 
         pwd
         ls
         ls externalPackages
@@ -43,10 +46,11 @@ jobs:
         ls /
         ls /home
         ls /home/STELLOPT
-        python --version
+        ls /home/STELLOPT/bin
+        python3 --version
     - name: Run unit tests
-      run: python -m unittest -v
-    - name: Build LIBSTELL and VMEC
-      run: |
-        cd ${STELLOPT_PATH}
-        ./build_all -o clean_debug -j 2 LIBSTELL VMEC2000
+      run: python3 -m unittest -v
+    #- name: Build LIBSTELL and VMEC
+    #  run: |
+    #    cd ${STELLOPT_PATH}
+    #    ./build_all -o clean_debug -j 2 LIBSTELL VMEC2000
