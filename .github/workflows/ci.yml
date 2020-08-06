@@ -25,23 +25,37 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
-    - name: Print information before checkout
+    - name: PWD
       run: |
         set -ex
         pwd
-        ls
-        ls /
-        ls /__w
-        ls /home
-        ls /home/github
-        ls /home/github/actions-runner
-        ls /home/github/actions-runner/_work
+    steps:
+    - name: ls -l
+      run: |
+        set -ex
+        ls -l
+    steps:
+    - name: ls -l /
+      run: |
+        set -ex
+        ls -l /
+    steps:
+    - name: ls -l /__w
+      run: |
+        set -ex
+        ls -l /__w
     - name: Change permissions where needed
       run: # See https://github.com/actions/checkout/issues/211 for explanation.
-        sudo chown -R $USER:$USER /home/github/actions-runner/_work/mattopt
-    - uses: actions/checkout@master
-      with:
-        submodules: true
+        sudo chown -R $USER:$USER /__w
+    - name: Change permissions where needed 2
+      run: # See https://github.com/actions/checkout/issues/211 for explanation.
+        sudo chown -R $USER:$USER /__w/mattopt
+    - name: Change permissions where needed 3
+      run: # See https://github.com/actions/checkout/issues/211 for explanation.
+        sudo chown -R $USER:$USER /__w/mattopt/mattopt
+    - uses: actions/checkout@v2
+      #with:
+      #  submodules: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
