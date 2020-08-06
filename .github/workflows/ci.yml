@@ -56,7 +56,7 @@ jobs:
     - name: ls -l /home/visitor
       run: |
         set -ex
-        ls -l /visitor
+        ls -l /home/visitor
     - name: env
       run: |
         set -ex
