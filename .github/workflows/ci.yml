@@ -103,10 +103,17 @@ jobs:
     - name: ls -l /__t/Python/3.7.8/x64/lib
       run: ls -l /__t/Python/3.7.8/x64/lib
 
-    - name: add python to paths
-      run: |
-        export LD_LIBRARY_PATH=$pythonLocation/lib
-        export PATH=$pythonLocation/lib:$PATH
+    #- name: add python to paths
+    #  run: |
+    #    export LD_LIBRARY_PATH=$pythonLocation/lib
+    #    export PATH=$pythonLocation/lib:$PATH
+
+    # See https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#adding-a-system-path
+    - name: add python path to LS_LIBRARY_PATH
+      run: echo "::set-env name=LD_LIBRARY_PATH::$pythonLocation/lib"
+
+    - name: add python path to path
+      run: "::add-path::$pythonLocation/lib"
 
     - name: env after adding python
       run: env
