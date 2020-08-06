@@ -70,6 +70,10 @@ jobs:
     #- name: Change permissions where needed 3
     #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
     #    sudo chown -R $USER:$USER /__w/mattopt/mattopt
+    - name: Print user and group id
+      run: |
+        set -ex
+        id
     - uses: actions/checkout@v2
       with:
         path: /home/visitor
