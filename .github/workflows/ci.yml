@@ -124,7 +124,7 @@ jobs:
       run: ls -l $pythonLocation/lib
 
     - name: try pip in pythonLocation
-      run: $pythoLocation/bin/pip --version
+      run: $pythonLocation/bin/pip --version
 
     #- name: add python to paths
     #  run: |
