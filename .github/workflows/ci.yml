@@ -50,8 +50,11 @@ jobs:
       run: |
         set -ex
         ls -l /__w/mattopt
+
+    # When running in a container where the user is not root, github actions does not have permission yet to put our repo where it belongs. Use sudo to add write permission.
     - name: chmod
-      run: echo visitor | sudo -S chmod a+wx /__w/mattopt/mattopt
+      run: echo visitor | sudo -S -E chmod a+wx ${{ github.workspace }}
+      #run: echo visitor | sudo -S -E chmod a+wx /__w/mattopt/mattopt
     - name: ls -l /__w/mattopt again
       run: |
         set -ex
@@ -121,10 +124,13 @@ jobs:
     - name: Check env for sudo
       run: echo visitor | sudo -S env
 
+    - name: Check env for sudo with -E
+      run: echo visitor | sudo -S -E env
+
     - name: Install python dependencies
       run: |
-        echo visitor | sudo -S $pythonLocation/python -m pip install --upgrade pip
-        echo visitor | sudo -S pip install numpy scipy f90nml
+        echo visitor | sudo -S -E python -m pip install --upgrade pip
+        echo visitor | sudo -S -E pip install numpy scipy f90nml
 
     - name: Print information
       run: |
