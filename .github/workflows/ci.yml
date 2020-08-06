@@ -113,15 +113,16 @@ jobs:
       run: echo "::set-env name=LD_LIBRARY_PATH::$pythonLocation/lib"
 
     #- name: add python path to path
-    #  run: "::add-path::$pythonLocation/lib"
+    #  run: echo "::add-path::$pythonLocation/lib"
 
     - name: env after adding python
       run: env
 
-    #- name: Install dependencies
-    #  run: |
-    #    python -m pip install --upgrade pip
-    #    pip install numpy scipy f90nml
+    - name: Install python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy f90nml
+
     - name: Print information
       run: |
         set -ex
