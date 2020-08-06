@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     # The next bit is copied from STELLOPT's github actions:
-    # Note that zhucaoxiang/stellopt:latest contains stellopt but
-    # zhucaoxiang/stellopt:compile does not, just the libraries it depends on.
+    # Note that zhucaoxiang/stellopt:latest and 
+    # zhucaoxiang/stellopt:test contain stellopt, but
+    # zhucaoxiang/stellopt:compile does not (it just the libraries it depends on.)
     #container: zhucaoxiang/stellopt:latest
     container: zhucaoxiang/stellopt:test
     env:
@@ -51,21 +52,29 @@ jobs:
         set -ex
         ls -l /__w/mattopt
 
-    # When running in a container where the user is not root, github actions does not have permission yet to put our repo where it belongs. Use sudo to add write permission.
+    # When running in a container where the user is not root, github
+    # actions does not have permission yet to put our repo where it
+    # belongs. Use sudo to add write permission. The -S flag lets us
+    # pass the password via stdin from the echo command. The -E flag
+    # passes environment variables.
     - name: chmod
       run: echo visitor | sudo -S -E chmod a+wx /__w/mattopt/mattopt
+
     - name: ls -l /__w/mattopt again
       run: |
         set -ex
         ls -l /__w/mattopt
+
     - name: ls -l /__w/mattopt/mattopt
       run: |
         set -ex
         ls -l /__w/mattopt/mattopt
+
     - name: ls -l /home
       run: |
         set -ex
         ls -l /home
+
     - name: ls -l /home/visitor
       run: |
         set -ex
@@ -105,14 +114,17 @@ jobs:
     - name: which pip after python setup
       run: pip --version
 
-    - name: ls -l /__t/Python/3.7.8/x64/bin
-      run: ls -l /__t/Python/3.7.8/x64/bin
+    - name: ls -l /__t/Python/3.x/x64/bin
+      run: ls -l $pythonLocation/bin
 
-    - name: ls -l /__t/Python/3.7.8/x64
-      run: ls -l /__t/Python/3.7.8/x64
+    - name: ls -l /__t/Python/3.x/x64
+      run: ls -l $pythonLocation
 
-    - name: ls -l /__t/Python/3.7.8/x64/lib
-      run: ls -l /__t/Python/3.7.8/x64/lib
+    - name: ls -l /__t/Python/3.x/x64/lib
+      run: ls -l $pythonLocation/lib
+
+    - name: try pip in pythonLocation
+      run: $pythoLocation/bin/pip --version
 
     #- name: add python to paths
     #  run: |
