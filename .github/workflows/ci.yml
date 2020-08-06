@@ -41,6 +41,14 @@ jobs:
       run: |
         set -ex
         ls -l /__w
+    - name: ls -l /__w/mattopt
+      run: |
+        set -ex
+        ls -l /__w/mattopt
+    - name: ls -l /__w/mattopt/mattopt
+      run: |
+        set -ex
+        ls -l /__w/mattopt/mattopt
     - name: Change permissions where needed
       run: # See https://github.com/actions/checkout/issues/211 for explanation.
         sudo chown -R $USER:$USER /__w
