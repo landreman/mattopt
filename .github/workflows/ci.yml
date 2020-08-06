@@ -32,6 +32,13 @@ jobs:
         ls
         ls /
         ls /__w
+        ls /home
+        ls /home/github
+        ls /home/github/actions-runner
+        ls /home/github/actions-runner/_work
+    - name: Change permissions where needed
+      run: # See https://github.com/actions/checkout/issues/211 for explanation.
+        sudo chown -R $USER:$USER /home/github/actions-runner/_work/mattopt
     - uses: actions/checkout@master
       with:
         submodules: true
