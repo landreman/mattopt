@@ -49,17 +49,30 @@ jobs:
       run: |
         set -ex
         ls -l /__w/mattopt/mattopt
-    - name: Change permissions where needed
-      run: # See https://github.com/actions/checkout/issues/211 for explanation.
-        sudo chown -R $USER:$USER /__w
-    - name: Change permissions where needed 2
-      run: # See https://github.com/actions/checkout/issues/211 for explanation.
-        sudo chown -R $USER:$USER /__w/mattopt
-    - name: Change permissions where needed 3
-      run: # See https://github.com/actions/checkout/issues/211 for explanation.
-        sudo chown -R $USER:$USER /__w/mattopt/mattopt
+    - name: ls -l /home
+      run: |
+        set -ex
+        ls -l /home
+    - name: ls -l /home/visitor
+      run: |
+        set -ex
+        ls -l /visitor
+    - name: env
+      run: |
+        set -ex
+        env
+    #- name: Change permissions where needed
+    #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
+    #    sudo chown -R $USER:$USER /__w
+    #- name: Change permissions where needed 2
+    #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
+    #    sudo chown -R $USER:$USER /__w/mattopt
+    #- name: Change permissions where needed 3
+    #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
+    #    sudo chown -R $USER:$USER /__w/mattopt/mattopt
     - uses: actions/checkout@v2
-      #with:
+      with:
+        path: /home/visitor
       #  submodules: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
