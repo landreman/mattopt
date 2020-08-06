@@ -126,6 +126,9 @@ jobs:
     - name: Check env for sudo with -E
       run: echo visitor | sudo -S -E env
 
+    - name: Check env for sudo with -E and explicit path
+      run: echo visitor | sudo -S -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH env
+
     # For some reason, LD_LIBRARY_PATH and PATH do not get passed to sudo correctly!
     - name: Install python dependencies
       run: |
