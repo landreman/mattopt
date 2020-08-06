@@ -5,7 +5,7 @@ This module provides a class that handles the VMEC equilibrium code.
 import numpy as np
 from mattopt import *
 #from FortranNamelist import NamelistFile
-import f90nml
+#import f90nml
 import logging
 
 class Vmec(Equilibrium):
@@ -73,37 +73,37 @@ class Vmec(Equilibrium):
         else:
             setattr(self, name, val_to_use)
 
-    @classmethod
-    def from_input_file(cls, filename):
-        """
-        Create an instance of the Vmec class based on settings that
-        are read in from a VMEC input namelist.
-        """
-        vmec = cls()
-
-        nml = f90nml.read(filename)
-        varlist = nml['indata']
-
-        vmec._parse_namelist_var(varlist, "nfp", 1, min=1)
-        vmec._parse_namelist_var(varlist, "mpol", 1, min=1)
-        vmec._parse_namelist_var(varlist, "ntor", 0, min=0)
-        vmec._parse_namelist_var(varlist, "delt", 0.7)
-        vmec._parse_namelist_var(varlist, "tcon0", 2.0)
-        vmec._parse_namelist_var(varlist, "phiedge", 1.0)
-        vmec._parse_namelist_var(varlist, "curtor", 0.0)
-        vmec._parse_namelist_var(varlist, "gamma", 0.0)
-        vmec._parse_namelist_var(varlist, "lfreeb", False, \
-                                    new_name="free_boundary", parameter=False)
-        vmec._parse_namelist_var(varlist, "ncurr", 1, parameter=False)
-
-        # Handle a few variables separately:
-        if "lasym" in varlist:
-            lasym = varlist["lasym"]
-        else:
-            lasym = False
-        vmec.stelsym = Parameter(not lasym)
-
-        vmec.boundary = SurfaceRZFourier(nfp=vmec.nfp.val, stelsym=vmec.stelsym.val, \
-                                      mpol=vmec.mpol.val, ntor=vmec.ntor.val)
-
-        return vmec
+#    @classmethod
+#    def from_input_file(cls, filename):
+#        """
+#        Create an instance of the Vmec class based on settings that
+#        are read in from a VMEC input namelist.
+#        """
+#        vmec = cls()
+#
+#        nml = f90nml.read(filename)
+#        varlist = nml['indata']
+#
+#        vmec._parse_namelist_var(varlist, "nfp", 1, min=1)
+#        vmec._parse_namelist_var(varlist, "mpol", 1, min=1)
+#        vmec._parse_namelist_var(varlist, "ntor", 0, min=0)
+#        vmec._parse_namelist_var(varlist, "delt", 0.7)
+#        vmec._parse_namelist_var(varlist, "tcon0", 2.0)
+#        vmec._parse_namelist_var(varlist, "phiedge", 1.0)
+#        vmec._parse_namelist_var(varlist, "curtor", 0.0)
+#        vmec._parse_namelist_var(varlist, "gamma", 0.0)
+#        vmec._parse_namelist_var(varlist, "lfreeb", False, \
+#                                    new_name="free_boundary", parameter=False)
+#        vmec._parse_namelist_var(varlist, "ncurr", 1, parameter=False)
+#
+#        # Handle a few variables separately:
+#        if "lasym" in varlist:
+#            lasym = varlist["lasym"]
+#        else:
+#            lasym = False
+#        vmec.stelsym = Parameter(not lasym)
+#
+#        vmec.boundary = SurfaceRZFourier(nfp=vmec.nfp.val, stelsym=vmec.stelsym.val, \
+#                                      mpol=vmec.mpol.val, ntor=vmec.ntor.val)
+#
+#        return vmec
