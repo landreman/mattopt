@@ -53,8 +53,7 @@ jobs:
 
     # When running in a container where the user is not root, github actions does not have permission yet to put our repo where it belongs. Use sudo to add write permission.
     - name: chmod
-      run: echo visitor | sudo -S -E chmod a+wx ${{ github.workspace }}
-      #run: echo visitor | sudo -S -E chmod a+wx /__w/mattopt/mattopt
+      run: echo visitor | sudo -S -E chmod a+wx /__w/mattopt/mattopt
     - name: ls -l /__w/mattopt again
       run: |
         set -ex
