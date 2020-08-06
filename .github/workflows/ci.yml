@@ -87,14 +87,23 @@ jobs:
       #with:
       #  path: /home/visitor
       #  submodules: true
+
     - name: which python3 before python setup
       run: which python3
+
+    - name: which pip before python setup
+      run: pip --version
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: which python3 after python setup
       run: which python3
+
+    - name: which pip after python setup
+      run: pip --version
 
     - name: ls -l /__t/Python/3.7.8/x64/bin
       run: ls -l /__t/Python/3.7.8/x64/bin
@@ -132,7 +141,9 @@ jobs:
     # For some reason, LD_LIBRARY_PATH and PATH do not get passed to sudo correctly!
     - name: Install python dependencies
       run: |
+        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH python3 -m pip install --upgrade pip
+        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip install numpy scipy 
 
     # If I include f90nml above, I get the following errror:
