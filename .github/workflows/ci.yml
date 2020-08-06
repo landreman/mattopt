@@ -118,9 +118,12 @@ jobs:
     - name: env after adding python
       run: env
 
+    - name: Check env for sudo
+      run: echo visitor | sudo -S env
+
     - name: Install python dependencies
       run: |
-        echo visitor | sudo -S python -m pip install --upgrade pip
+        echo visitor | sudo -S $pythonLocation/python -m pip install --upgrade pip
         echo visitor | sudo -S pip install numpy scipy f90nml
 
     - name: Print information
