@@ -12,7 +12,8 @@ jobs:
     # The next bit is copied from STELLOPT's github actions:
     # Note that zhucaoxiang/stellopt:latest contains stellopt but
     # zhucaoxiang/stellopt:compile does not, just the libraries it depends on.
-    container: zhucaoxiang/stellopt:latest
+    #container: zhucaoxiang/stellopt:latest
+    container: zhucaoxiang/stellopt:test
     env:
       MACHINE: docker
       #STELLOPT_PATH: ${{ github.workspace }}/externalPackages/STELLOPT
@@ -75,8 +76,8 @@ jobs:
         set -ex
         id
     - uses: actions/checkout@v2
-      with:
-        path: /home/visitor
+      #with:
+      #  path: /home/visitor
       #  submodules: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
