@@ -51,9 +51,7 @@ jobs:
         set -ex
         ls -l /__w/mattopt
     - name: chmod
-      run: |
-        set -ex
-        sudo chmod a+rx /__w/mattopt/mattopt
+      run: echo visitor | sudo -S chmod a+rx /__w/mattopt/mattopt
     - name: ls -l /__w/mattopt again
       run: |
         set -ex
