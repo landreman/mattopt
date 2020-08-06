@@ -15,7 +15,8 @@ jobs:
     container: zhucaoxiang/stellopt:latest
     env:
       MACHINE: docker
-      STELLOPT_PATH: ${{ github.workspace }}/externalPackages/STELLOPT
+      #STELLOPT_PATH: ${{ github.workspace }}/externalPackages/STELLOPT
+      STELLOPT_PATH: ${{ github.workspace }}
       OMPI_ALLOW_RUN_AS_ROOT: 1
       OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
 
@@ -24,7 +25,14 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Print information before checkout
+      run: |
+        set -ex
+        pwd
+        ls
+        ls /
+        ls /__w
+    - uses: actions/checkout@master
       with:
         submodules: true
     - name: Set up Python ${{ matrix.python-version }}
