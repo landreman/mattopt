@@ -126,10 +126,11 @@ jobs:
     - name: Check env for sudo with -E
       run: echo visitor | sudo -S -E env
 
+    # For some reason, LD_LIBRARY_PATH and PATH do not get passed to sudo correctly!
     - name: Install python dependencies
       run: |
-        echo visitor | sudo -S -E python -m pip install --upgrade pip
-        echo visitor | sudo -S -E pip install numpy scipy f90nml
+        echo visitor | sudo -S -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH python -m pip install --upgrade pip
+        echo visitor | sudo -S -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip install numpy scipy f90nml
 
     - name: Print information
       run: |
