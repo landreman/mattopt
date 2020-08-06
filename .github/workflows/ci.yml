@@ -29,17 +29,14 @@ jobs:
       run: |
         set -ex
         pwd
-    steps:
     - name: ls -l
       run: |
         set -ex
         ls -l
-    steps:
     - name: ls -l /
       run: |
         set -ex
         ls -l /
-    steps:
     - name: ls -l /__w
       run: |
         set -ex
