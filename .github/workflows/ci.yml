@@ -26,6 +26,10 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
+    - name: Print user and group id
+      run: |
+        set -ex
+        id
     - name: PWD
       run: |
         set -ex
@@ -43,6 +47,14 @@ jobs:
         set -ex
         ls -l /__w
     - name: ls -l /__w/mattopt
+      run: |
+        set -ex
+        ls -l /__w/mattopt
+    - name: chmod
+      run: |
+        set -ex
+        sudo chmod a+rx /__w/mattopt/mattopt
+    - name: ls -l /__w/mattopt again
       run: |
         set -ex
         ls -l /__w/mattopt
@@ -71,10 +83,6 @@ jobs:
     #- name: Change permissions where needed 3
     #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
     #    sudo chown -R $USER:$USER /__w/mattopt/mattopt
-    - name: Print user and group id
-      run: |
-        set -ex
-        id
     - uses: actions/checkout@v2
       #with:
       #  path: /home/visitor
