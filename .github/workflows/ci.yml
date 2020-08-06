@@ -132,8 +132,8 @@ jobs:
     # For some reason, LD_LIBRARY_PATH and PATH do not get passed to sudo correctly!
     - name: Install python dependencies
       run: |
-        echo visitor | sudo -S -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH python3 -m pip install --upgrade pip
-        echo visitor | sudo -S -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip install numpy scipy f90nml
+        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH python3 -m pip install --upgrade pip
+        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip install numpy scipy f90nml
 
     - name: Print information
       run: |
