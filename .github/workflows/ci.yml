@@ -27,26 +27,35 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
+    # First print out lots of information. We do this in separate 
+    # "name" blocks because otherwise the output gets mixed together
+    # in the github actions log.
+    
     - name: Print user and group id
       run: |
         set -ex
         id
+
     - name: PWD
       run: |
         set -ex
         pwd
+
     - name: ls -l
       run: |
         set -ex
         ls -l
+
     - name: ls -l /
       run: |
         set -ex
         ls -l /
+
     - name: ls -l /__w
       run: |
         set -ex
         ls -l /__w
+
     - name: ls -l /__w/mattopt
       run: |
         set -ex
@@ -83,18 +92,9 @@ jobs:
     - name: env
       run: env
 
-    #- name: Change permissions where needed
-    #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
-    #    sudo chown -R $USER:$USER /__w
-    #- name: Change permissions where needed 2
-    #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
-    #    sudo chown -R $USER:$USER /__w/mattopt
-    #- name: Change permissions where needed 3
-    #  run: # See https://github.com/actions/checkout/issues/211 for explanation.
-    #    sudo chown -R $USER:$USER /__w/mattopt/mattopt
     - uses: actions/checkout@v2
+      # If we want submodules downloaded, uncomment the next 2 lines:
       #with:
-      #  path: /home/visitor
       #  submodules: true
 
     - name: which python3 before python setup
@@ -123,23 +123,11 @@ jobs:
     - name: ls -l /__t/Python/3.x/x64/lib
       run: ls -l $pythonLocation/lib
 
-    #- name: try pip in pythonLocation
-    #  run: |
-    #    ls -l $pythonLocation/bin
-    #    ls -l $pythonLocation/bin/pip
-    #    $pythonLocation/bin/pip --version
-
-    #- name: add python to paths
-    #  run: |
-    #    export LD_LIBRARY_PATH=$pythonLocation/lib
-    #    export PATH=$pythonLocation/lib:$PATH
-
+    # If this next 'run' block does not appear, there is an error that
+    # the python shared library cannot be found.
     # See https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#adding-a-system-path
     - name: add python path to LD_LIBRARY_PATH
       run: echo "::set-env name=LD_LIBRARY_PATH::$pythonLocation/lib"
-
-    #- name: add python path to path
-    #  run: echo "::add-path::$pythonLocation/lib"
 
     - name: env after adding python
       run: env
@@ -147,9 +135,13 @@ jobs:
     - name: Check env for sudo
       run: echo visitor | sudo -S env
 
+    # Environment variables are not passed through sudo unless the -E flag is present:
     - name: Check env for sudo with -E
       run: echo visitor | sudo -S -E env
 
+    # For some reason, LD_LIBRARY_PATH and PATH do not get passed to sudo correctly
+    # even with -E. These environment variables can however be specified explicitly
+    # as shown here:
     - name: Check env for sudo with -E and explicit path
       run: echo visitor | sudo -S -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH env
 
@@ -157,41 +149,26 @@ jobs:
       run: |
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH which python3
 
-    # For some reason, LD_LIBRARY_PATH and PATH do not get passed to sudo correctly!
+    # From sudo, python must be run via $pythonLocation/bin/python for some reason. "python" is not found
+    # and "python3" gives the wrong version, the version of python3 that came with the container instead
+    # of the version of python3 managed by github actions.
+    # Furthermore, pip must be run via "$pythonLocation/bin/python -m pip" or else the wrong
+    # version of pip is used, (the version of python3 that came with the container).
     - name: Install python dependencies
       run: |
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH python3 -m pip --version
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/python -m pip install --upgrade pip
-        #echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH pip --version
-        #echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/pip --version
         echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/python -m pip install numpy scipy 
 
-    # If I include f90nml above, I get the following errror:
+    # When running the python tests, as of 2020-08-06, this error occurs:
     # ImportError: libffi.so.6: cannot open shared object file: No such file or directory
-
-    # ImportError: libffi.so.6: cannot open shared object file: No such file or directory
+    # There are many reports of this on the web, e.g. https://bugs.python.org/issue40367
+    # An inelegant but effective workaround is to make a symlink to version 7 of the .so library:
     - name: Symlink libffi.so.7 to libffi.so.6
       run: |
         echo visitor | sudo -S ln -s /usr/lib/x86_64-linux-gnu/libffi.so.7 /usr/lib/x86_64-linux-gnu/libffi.so.6
         ls -l /usr/lib/x86_64-linux-gnu/*
 
-    - name: Print information
-      run: |
-        set -ex
-        env 
-        pwd
-        ls
-        ls externalPackages
-        ls externalPackages/STELLOPT
-        ls /
-        ls /home
-        ls /home/STELLOPT
-        ls /home/STELLOPT/bin
-        python3 --version
     - name: Run unit tests
       run: python3 -m unittest -v
-    #- name: Build LIBSTELL and VMEC
-    #  run: |
-    #    cd ${STELLOPT_PATH}
-    #    ./build_all -o clean_debug -j 2 LIBSTELL VMEC2000
