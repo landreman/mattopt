@@ -190,7 +190,7 @@ jobs:
       run: |
         pwd
         cd mattopt/vmec
-        make
+        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH make
         ls -l
 
     - name: Run unit tests
