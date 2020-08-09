@@ -175,14 +175,15 @@ jobs:
         echo visitor | sudo -S ln -s /usr/lib/x86_64-linux-gnu/libffi.so.7 /usr/lib/x86_64-linux-gnu/libffi.so.6
         ls -l /usr/lib/x86_64-linux-gnu/*
 
-    - name: ls -l /opt/hostedtoolcache/Python
-      run: ls -l /opt/hostedtoolcache/Python
+    #- name: ls -l /opt/hostedtoolcache/Python
+    #  run: ls -l /opt/hostedtoolcache/Python
 
-    - name: ls -l /opt/hostedtoolcache/Python/*/x64/lib
-      run: ls -l /opt/hostedtoolcache/Python/*/x64/lib
+    #- name: ls -l /opt/hostedtoolcache/Python/*/x64/lib
+    #  run: ls -l /opt/hostedtoolcache/Python/*/x64/lib
 
     - name: Install f90wrap
-      run: echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH F90="/usr/bin/gfortran -L $pythonLocation/bin" $pythonLocation/bin/python -m pip install f90wrap
+      run: echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/python -m pip install --install-option="--library-dirs=$pythonLocation/bin" f90wrap
+      #run: echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH F90="/usr/bin/gfortran -L $pythonLocation/bin" $pythonLocation/bin/python -m pip install f90wrap
 
     - name: Run unit tests
       run: python3 -m unittest -v
