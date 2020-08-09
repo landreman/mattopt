@@ -5,35 +5,41 @@ import os
 from mattopt.vmec import vmec_f90wrap
 from mattopt.vmec.core import run_modes
 
-class F90wrapVmecTests(unittest.TestCase):
-    def test_read_input(self):
-        """
-        Try reading a VMEC input file.
-        """
-        fcomm = MPI.COMM_WORLD.py2f()
-        rank = MPI.COMM_WORLD.Get_rank()
-        verbose = (rank == 0)
-        # The input file will be in the same directory as this file:
-        filename = os.path.join(os.path.dirname(__file__), 'input.li383_low_res')
+success_codes = [0, 11]
+reset_file = ''
 
-        ictrl = np.zeros(5, dtype=np.int32)
+class F90wrapVmecTests(unittest.TestCase):
+    def setUp(self):
+        """
+        Set up the test fixture.
+        """
+        self.fcomm = MPI.COMM_WORLD.py2f()
+        rank = MPI.COMM_WORLD.Get_rank()
+        self.verbose = (rank == 0)
+        # The input file will be in the same directory as this file:
+        self.filename = os.path.join(os.path.dirname(__file__), 'input.li383_low_res')
+
+        self.ictrl = np.zeros(5, dtype=np.int32)
 
         ier = 0
         numsteps = 1
         ns_index = -1
         iseq = rank
-        ictrl[0] = run_modes['input']
-        ictrl[1] = ier
-        ictrl[2] = numsteps
-        ictrl[3] = ns_index
-        ictrl[4] = iseq
+        self.ictrl[0] = 0
+        self.ictrl[1] = ier
+        self.ictrl[2] = numsteps
+        self.ictrl[3] = ns_index
+        self.ictrl[4] = iseq
 
-        reset_file = ''
+    def test_read_input(self):
+        """
+        Try reading a VMEC input file.
+        """
+        self.ictrl[0] = run_modes['input']
+        vmec_f90wrap.runvmec(self.ictrl, self.filename, self.verbose, \
+                                 self.fcomm, reset_file)
 
-        vmec_f90wrap.runvmec(ictrl, filename, verbose, fcomm, reset_file)
-
-        success_codes = [0, 11]
-        self.assertTrue(ictrl[1] in success_codes)
+        self.assertTrue(self.ictrl[1] in success_codes)
 
         self.assertEqual(vmec_f90wrap.vmec_input.nfp, 3)
         self.assertEqual(vmec_f90wrap.vmec_input.mpol, 4)
