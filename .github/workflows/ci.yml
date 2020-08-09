@@ -176,7 +176,7 @@ jobs:
         ls -l /usr/lib/x86_64-linux-gnu/*
 
     - name: Install f90wrap
-        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/python -m pip install f90wrap
+      run: echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/python -m pip install f90wrap
 
     - name: Run unit tests
       run: python3 -m unittest -v
