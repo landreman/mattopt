@@ -179,7 +179,8 @@ jobs:
 
     - name: Install mpi4py
       run: |
-        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH $pythonLocation/bin/python -m pip install mpi4py
+        echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH LIBRARY_PATH=$pythonLocation/bin $pythonLocation/bin/python -m pip install mpi4py
+      # In the line above, if LIBRARY_PATH (without LD_) is unspecified, f90wrap installation works for python 3.8, but fails with python3.7 due to an error about finding -lpython3.7m
 
     - name: Install f90wrap
       run: echo visitor | sudo -S -H -E LD_LIBRARY_PATH=$LD_LIBRARY_PATH PATH=$PATH LIBRARY_PATH=$pythonLocation/bin $pythonLocation/bin/python -m pip install git+https://github.com/jameskermode/f90wrap
