@@ -7,8 +7,9 @@
   TCON0 =  2.
   NFP =  3
   NCURR =  1
-  MPOL =  9  NTOR =  5
-  NS_ARRAY =    16   49
+  MPOL =  4
+  NTOR =  3
+  NS_ARRAY =    16
   NITER =  2500
   NSTEP =  200
   NVACSKIP =  3
